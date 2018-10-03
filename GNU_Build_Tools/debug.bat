@@ -1,0 +1,1 @@
+arm-none-eabi-gdb ..\\Build\\STM32F767IGT6.elf
