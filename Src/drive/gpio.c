@@ -30,7 +30,8 @@ void LED_Init(void)
 void Key_Init(void)
 {
         GPIO_InitTypeDef GPIO_Initure;
-/* Keyboard Configure */
+
+	/* Keyboard Configure */
         /* WK_UP Key*/
         GPIO_Initure.Pin = GPIO_PIN_0;
         GPIO_Initure.Mode = GPIO_MODE_INPUT;

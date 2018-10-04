@@ -79,8 +79,6 @@ void main_init(void)
         IIC_Pin_Interface1.SCL.Pin  = GPIO_PIN_4;
         IIC_Pin_Interface1.SDA.GPIO = GPIOH;
         IIC_Pin_Interface1.SDA.Pin  = GPIO_PIN_5;
-        _at24c02_dev.IIC_Pin_Interface = &IIC_Pin_Interface1;
-        _at24c02_dev.IIC_Device_Address = AT24CXX_ADDR;
 
         HAL_Init();
         SDRAM_Init();
@@ -96,7 +94,8 @@ void main_init(void)
         RTC_WeakUp_Enable(WKUP_CLK_PRE_16, 2048); /* 1秒1次唤醒中断 */
         UART_Init();
         printf("UART Initialized successed!\r\n");
-        IIC_Init(&_at24c02_dev);
+	IIC_Interface_Init(&IIC_Pin_Interface1);
+	AT24CXX_Init(&_at24c02_dev, &IIC_Pin_Interface1, 0);
         while (!AT24CXX_Check(&_at24c02_dev)) {
                 printf("24C02 Check Failed!\r\n");
                 printf("Please Check!      \r\n");

@@ -1,6 +1,18 @@
 #Directory
 ROOTDIR    = ..
-DIR_DIV    = /
+
+ifeq ($(OS),Windows_NT)
+DIR_DIV  = \\
+MKDIR    = mkdir
+RMDIR    = rmdir
+RM       = del -f
+else
+DIR_DIV  = /
+MKDIR    = mkdir -p
+RMDIR    = rmdir
+RM       = rm -f
+endif
+
 OUTPUTDIR  = $(ROOTDIR)$(DIR_DIV)Build
 OBJDIR     = $(OUTPUTDIR)$(DIR_DIV)GCC_Objects
 KERNEL_DIR = $(ROOTDIR)/System/FreeRTOS_Kernel
@@ -23,9 +35,6 @@ CC       = $(PLATFORM)-gcc
 AS       = $(PLATFORM)-as
 LD       = $(PLATFORM)-ld
 OBJCOPY  = $(PLATFORM)-objcopy
-MKDIR    = mkdir -p
-RMDIR    = rmdir
-RM       = rm -f
 
 #complier's flags
 RELEASE = debug
@@ -78,27 +87,27 @@ LIBRARY_OPT = \
     -lm
 
 define compile_as
-@echo "      AS	$(subst $(ROOTDIR)/,,$<)"
+@echo "    AS    $(subst $(ROOTDIR)/,,$<)"
 @$(AS) $(ASFLAGS) -c $< -o $@
 endef
 
 define compile_c
-@echo "      CC	$(subst $(ROOTDIR)/,,$<)"
+@echo "    CC    $(subst $(ROOTDIR)/,,$<)"
 @$(CC) $(CODE_OPT_FLAGS) $(CPPFLAGS) -c $< -o $@
 endef
 
 define link_object
-@echo "      LD	$(subst $(ROOTDIR)/,,$@)"
-@$(CC) $(LDFLAGS) -T $(LDSCRIPT) $(OBJS) -o $@ $(LIBRARY_OPT)
+@echo "    LD    $(subst $(ROOTDIR)$(DIR_DIV),,$@)"
+@$(CC) $(LDFLAGS) -T $(LDSCRIPT) $^ -o $@ $(LIBRARY_OPT)
 endef
 
 define objcopy_binary
-@echo "      GEN	$(subst $(ROOTDIR)/,,$@)"
+@echo "    GEN   $(subst $(ROOTDIR)$(DIR_DIV),,$@)"
 @$(OBJCOPY) -O binary -I ihex $< $@
 endef
 
 define objcopy_ihex
-@echo "      GEN	$(subst $(ROOTDIR)/,,$@)"
+@echo "    GEN   $(subst $(ROOTDIR)$(DIR_DIV),,$@)"
 @$(OBJCOPY) -O ihex $< $@
 endef
 
@@ -224,6 +233,7 @@ clean:
 	@echo remove all directories.
 	-@${RMDIR} $(OUTPUTDIR)
 init:
+	@echo Building on the $(OS).
 	-@$(MKDIR) $(OBJDIR)
 $(ELF): $(OBJS)
 	$(call link_object)

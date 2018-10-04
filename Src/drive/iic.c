@@ -33,25 +33,24 @@
 #define IIC_SDA_MODE_INPUT   GPIO_MODE_INPUT     /* SDA输入模式 */
 #define IIC_SDA_MODE_OUT     GPIO_MODE_OUTPUT_PP /* SDA输出模式 */
 
-
 /* IIC初始化 */
-void IIC_Init(IIC_DeviceTypeDef *IIC)
+void IIC_Interface_Init(IIC_GPIOInterfaceTypeDef *Interface)
 {
-        GPIO_InitTypeDef GPIO_Initure = {0};
+        GPIO_InitTypeDef GPIO_Initure;
 /* IIC SCL引脚设置 */
         GPIO_Initure.Mode = GPIO_MODE_OUTPUT_PP;
-        GPIO_Initure.Pin  = IIC->IIC_Pin_Interface->SCL.Pin;
+        GPIO_Initure.Pin  = Interface->SCL.Pin;
         GPIO_Initure.Pull = GPIO_PULLUP;
         GPIO_Initure.Speed= GPIO_SPEED_FAST;
-        GPIO_Clk_Enable(IIC->IIC_Pin_Interface->SCL.GPIO);
-        HAL_GPIO_Init(IIC->IIC_Pin_Interface->SCL.GPIO, &GPIO_Initure);
+        GPIO_Clk_Enable(Interface->SCL.GPIO);
+        HAL_GPIO_Init(Interface->SCL.GPIO, &GPIO_Initure);
 /* IIC SDA引脚设置 */
-        GPIO_Initure.Pin = IIC->IIC_Pin_Interface->SDA.Pin;
-        GPIO_Clk_Enable(IIC->IIC_Pin_Interface->SDA.GPIO);
-        HAL_GPIO_Init(IIC->IIC_Pin_Interface->SDA.GPIO, &GPIO_Initure);
+        GPIO_Initure.Pin = Interface->SDA.Pin;
+        GPIO_Clk_Enable(Interface->SDA.GPIO);
+        HAL_GPIO_Init(Interface->SDA.GPIO, &GPIO_Initure);
 /* 初始化引脚 */
-        IIC_SetSCL(IIC);
-        IIC_SetSDA(IIC);
+        GPIO_SetPin(Interface->SCL.GPIO, Interface->SCL.Pin);
+        GPIO_SetPin(Interface->SDA.GPIO, Interface->SDA.Pin);
 }
 
 /* IIC 发出开始信号 */

@@ -8,7 +8,7 @@ prj_root_dir=${script_dir%\/`basename ${script_dir}`}
 pushd ${script_dir} > /dev/null
 
 if [ -f ./scripts/update_objects.py ]; then
-	python3 ./scripts/update_objects.py
+    python3 ./scripts/update_objects.py
 elif ! [ -f ./scripts/objects.mk ]; then
     echo "Can't build this project, cause scripts/objects.mk doesn't exist"
     exit -1

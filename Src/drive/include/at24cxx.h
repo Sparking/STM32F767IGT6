@@ -16,7 +16,8 @@
 
 #define AT24CXX_ADDR    0xA0
 
-void AT24CXX_Init(IIC_DeviceTypeDef *_at24cxx_dev);
+#define AT24CXX_Init(dev, interface, nr) \
+        IIC_Init((dev), (interface), AT24CXX_ADDR | (nr))
 void AT24CXX_WriteByte(IIC_DeviceTypeDef *_at24cxx_dev, unsigned short addr,
         unsigned char data);
 void AT24CXX_WriteBuff(IIC_DeviceTypeDef *_at24cxx_dev, unsigned short addr,

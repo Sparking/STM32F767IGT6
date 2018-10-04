@@ -114,8 +114,6 @@ unsigned char GT9147_Init(void)
         _gt9147_pin.SCL.GPIO = GPIOH;
         _gt9147_pin.SDA.Pin  = GPIO_PIN_3;
         _gt9147_pin.SDA.GPIO = GPIOI;
-        _gt9147_device.IIC_Device_Address = GT9147_ADDR;
-        _gt9147_device.IIC_Pin_Interface = &_gt9147_pin;
 
         GPIO_Initure.Pin   = GPIO_PIN_7;
         GPIO_Initure.Mode  = GPIO_MODE_INPUT;
@@ -127,10 +125,11 @@ unsigned char GT9147_Init(void)
         GPIO_Initure.Mode = GPIO_MODE_OUTPUT_PP;
         HAL_GPIO_Init(GPIOI, &GPIO_Initure);
  
-        IIC_Init(dev); /* 初始化电容屏的IIC总线 */
-	GT_RST_Reset(); /* 复位 */
+	IIC_Interface_Init(&_gt9147_pin);
+        IIC_Init(dev, &_gt9147_pin, GT9147_ADDR); /* 初始化电容屏的IIC总线 */
+	GT_RST_Reset();
 	delayms(10);
- 	GT_RST_Set(); /* 释放复位 */
+ 	GT_RST_Set();
 	delayms(10); 
 
         GPIO_Initure.Pin   = GPIO_PIN_7;
