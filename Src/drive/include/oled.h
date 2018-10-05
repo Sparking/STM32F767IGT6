@@ -13,12 +13,12 @@
 #define OLED_IIC_WRITEDATA(dev, data)   \
         OLED_IIC_WriteByte(dev, 0x40U, data)
 
-void OLED_IIC_WriteByte(IIC_DeviceTypeDef *dev, unsigned char reg,
+void OLED_IIC_WriteByte(i2c_device_t *dev, unsigned char reg,
         unsigned char dat);
-void OLED_IIC_WriteCmd(IIC_DeviceTypeDef *dev, unsigned char cmd);
-void OLED_IIC_Init(IIC_DeviceTypeDef *dev);
-void OLED_IIC_SetPos(IIC_DeviceTypeDef *dev, unsigned char x,
+void OLED_IIC_WriteCmd(i2c_device_t *dev, unsigned char cmd);
+void OLED_IIC_Init(i2c_device_t *dev);
+void OLED_IIC_SetPos(i2c_device_t *dev, unsigned char x,
         unsigned char y);
-void OLED_IIC_Clean(IIC_DeviceTypeDef *dev, unsigned char data);
+void OLED_IIC_Clean(i2c_device_t *dev, unsigned char data);
 
 #endif /* End of __OLED_H_ */

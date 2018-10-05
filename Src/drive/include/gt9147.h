@@ -26,9 +26,9 @@
 unsigned char GT9147_Init(void);
 unsigned char GT9147_Scan(void);
 
-void GT9147_RD_Reg(IIC_DeviceTypeDef *dev, unsigned int reg,
+void GT9147_RD_Reg(i2c_device_t *dev, unsigned int reg,
                    unsigned char *buf, unsigned char len);
-unsigned char GT9147_WR_Reg(IIC_DeviceTypeDef *dev, unsigned int reg,
+unsigned char GT9147_WR_Reg(i2c_device_t *dev, unsigned int reg,
                             unsigned char *buf, unsigned char len);
-unsigned char GT9147_Send_Cfg(IIC_DeviceTypeDef *dev, unsigned char mode);
+unsigned char GT9147_Send_Cfg(i2c_device_t *dev, unsigned char mode);
 #endif

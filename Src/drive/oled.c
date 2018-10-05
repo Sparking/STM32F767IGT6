@@ -5,11 +5,11 @@
  * @reg: OLED Controller Register
  * @dat: data to write to the Register reg
  */
-void OLED_IIC_WriteByte(IIC_DeviceTypeDef *dev, unsigned char reg,
+void OLED_IIC_WriteByte(i2c_device_t *dev, unsigned char reg,
         unsigned char dat)
 {
         IIC_Start(dev);
-        IIC_WriteByte(dev, dev->IIC_Device_Address);
+        IIC_WriteByte(dev, dev->addr);
         IIC_WaitAck(dev);
         IIC_WriteByte(dev, reg);
         IIC_WaitAck(dev);
@@ -18,14 +18,14 @@ void OLED_IIC_WriteByte(IIC_DeviceTypeDef *dev, unsigned char reg,
         IIC_Stop(dev);
 }
 
-void OLED_IIC_On(IIC_DeviceTypeDef *dev)
+void OLED_IIC_On(i2c_device_t *dev)
 {
         OLED_IIC_WRITECMD(dev, 0x8d);
         OLED_IIC_WRITECMD(dev, 0x14);
         OLED_IIC_WRITECMD(dev, 0xaf);
 }
 
-void OLED_IIC_Init(IIC_DeviceTypeDef *dev)
+void OLED_IIC_Init(i2c_device_t *dev)
 {
         delayxms(100);
         OLED_IIC_WRITECMD(dev, 0xAE);
@@ -56,7 +56,7 @@ void OLED_IIC_Init(IIC_DeviceTypeDef *dev)
         OLED_IIC_On(dev);
 }
 
-void OLED_IIC_SetPos(IIC_DeviceTypeDef *dev, unsigned char x,
+void OLED_IIC_SetPos(i2c_device_t *dev, unsigned char x,
         unsigned char y)
 {
         OLED_IIC_WRITECMD(dev, 0xb0 + y);
@@ -64,7 +64,7 @@ void OLED_IIC_SetPos(IIC_DeviceTypeDef *dev, unsigned char x,
         OLED_IIC_WRITECMD(dev, (x & 0x0f) | 0x01);
 }
 
-void OLED_IIC_Clean(IIC_DeviceTypeDef *dev, unsigned char data)
+void OLED_IIC_Clean(i2c_device_t *dev, unsigned char data)
 {
         unsigned char m, n;
         for (m = 0; m < 8; m++) {
@@ -76,7 +76,7 @@ void OLED_IIC_Clean(IIC_DeviceTypeDef *dev, unsigned char data)
         }
 }
 /*
-void OLED_IIC_Puts(IIC_DeviceTypeDef *dev, char *string, Font_TypeDef *font,
+void OLED_IIC_Puts(i2c_device_t *dev, char *string, Font_TypeDef *font,
         unsigned char x, unsigned char y)
 {
         unsigned char ch;

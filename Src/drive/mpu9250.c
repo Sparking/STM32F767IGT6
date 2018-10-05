@@ -1,6 +1,6 @@
 #include "mpu9250.h"
 
-void mpu9250_init(IIC_DeviceTypeDef *mpu9250)
+void mpu9250_init(i2c_device_t *mpu9250)
 {
-	return;
+    return;
 }

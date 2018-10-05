@@ -8,7 +8,6 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
-
 /*
  * 函数: delayxms
  * 参数:
@@ -18,7 +17,12 @@
  */
 extern void delayxms(uint32_t delay_time);
 
+#else
+
+#define delayxms(x) delayms(x)
+
 #endif
+
 
 /*
  * 函数: delayus

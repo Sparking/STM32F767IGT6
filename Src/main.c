@@ -15,8 +15,8 @@
 extern void RTC_WKUP_IRQHandler(void);
 
 /* IIC设备接口1 */
-IIC_GPIOInterfaceTypeDef IIC_Pin_Interface1;
-IIC_DeviceTypeDef _at24c02_dev;
+i2c_interface_t i2c_int1;
+i2c_device_t at24c02_dev;
 const char *const String = "XXC Test.\r\n";
 
 /*
@@ -52,12 +52,12 @@ void LCD_Show(void)
         LCD_String.PointConfig.Position.X = 0;
         LCD_String.PointConfig.Position.Y = 32;
         LCD_Puts(&LCD_String, str);
-        AT24CXX_ReadByte(&_at24c02_dev, 0, (unsigned char *)str);
+        AT24CXX_ReadByte(&at24c02_dev, 0, (unsigned char *)str);
         sprintf(str, "Target Temperature: %d", (int)str[0]);
         Fill_Str(str, 29);
         LCD_String.PointConfig.Position.Y = 48;
         LCD_Puts(&LCD_String, str);
-        AT24CXX_ReadByte(&_at24c02_dev, 1, (unsigned char *)str);
+        AT24CXX_ReadByte(&at24c02_dev, 1, (unsigned char *)str);
         sprintf(str, "Heating Status:%s", str[0] == 1 ? "heating" : "stopped");
         Fill_Str(str, 29);
         LCD_String.PointConfig.Position.Y = 64;
@@ -75,10 +75,10 @@ void main_init(void)
         RTC_TimeTypeDef time;
 
         /* IIC 设备初始化 */
-        IIC_Pin_Interface1.SCL.GPIO = GPIOH;
-        IIC_Pin_Interface1.SCL.Pin  = GPIO_PIN_4;
-        IIC_Pin_Interface1.SDA.GPIO = GPIOH;
-        IIC_Pin_Interface1.SDA.Pin  = GPIO_PIN_5;
+        i2c_int1.SCL.GPIO = GPIOH;
+        i2c_int1.SCL.Pin  = GPIO_PIN_4;
+        i2c_int1.SDA.GPIO = GPIOH;
+        i2c_int1.SDA.Pin  = GPIO_PIN_5;
 
         HAL_Init();
         SDRAM_Init();
@@ -94,16 +94,16 @@ void main_init(void)
         RTC_WeakUp_Enable(WKUP_CLK_PRE_16, 2048); /* 1秒1次唤醒中断 */
         UART_Init();
         printf("UART Initialized successed!\r\n");
-	IIC_Interface_Init(&IIC_Pin_Interface1);
-	AT24CXX_Init(&_at24c02_dev, &IIC_Pin_Interface1, 0);
-        while (!AT24CXX_Check(&_at24c02_dev)) {
+        IIC_Interface_Init(&i2c_int1);
+        AT24CXX_Init(&at24c02_dev, &i2c_int1, 0);
+        while (!AT24CXX_Check(&at24c02_dev)) {
                 printf("24C02 Check Failed!\r\n");
                 printf("Please Check!      \r\n");
                 delayms(500);
         }
         printf("24C02 Ready!\r\n");
         TIM3_PWM_Init(TIM3_FREQ, TIM3_PWM2_PERIOD, 0);
-        AT24CXX_ReadByte(&_at24c02_dev, 0, &i);
+        AT24CXX_ReadByte(&at24c02_dev, 0, &i);
         printf("The last set value is %u.\r\n", i);
         TIM3->CCR2 = 0;
 
@@ -119,7 +119,7 @@ int main(void)
 
     main_init();
     times = 0;
-    AT24CXX_ReadByte(&_at24c02_dev, 1, &heat_flag);
+    AT24CXX_ReadByte(&at24c02_dev, 1, &heat_flag);
     while (1) {
         if (times % 200 == 0) {
             IWDG_Feed();
@@ -133,7 +133,7 @@ int main(void)
         switch (Key_Scan(KEY_SCAN_MODE_KLI)) {
         case KEY0_PRESSED:
             heat_flag = !heat_flag;
-            AT24CXX_WriteByte(&_at24c02_dev, 1, heat_flag);
+            AT24CXX_WriteByte(&at24c02_dev, 1, heat_flag);
             printf("Change heat mode!\r\n");
             break;
         case KEY1_PRESSED:
@@ -141,7 +141,7 @@ int main(void)
                 IWDG_Feed();
                 printf("input %d\r\n", temp);
                 if (temp <= 100) {
-                    AT24CXX_WriteByte(&_at24c02_dev, 0, (unsigned char)temp);
+                    AT24CXX_WriteByte(&at24c02_dev, 0, (unsigned char)temp);
                 }
             }
             break;
