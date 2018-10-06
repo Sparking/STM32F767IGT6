@@ -5,28 +5,28 @@ USEROBJS =  \
     $(OBJDIR)/Src_user_lcd_touch.o \
     $(OBJDIR)/Src_user_pid.o \
     $(OBJDIR)/Src_user_setting_interface.o \
-    $(OBJDIR)/Src_drive_ad7705_softspi.o \
-    $(OBJDIR)/Src_drive_at24cxx.o \
-    $(OBJDIR)/Src_drive_delay.o \
-    $(OBJDIR)/Src_drive_digital_filter.o \
-    $(OBJDIR)/Src_drive_ds18b20.o \
-    $(OBJDIR)/Src_drive_exti.o \
-    $(OBJDIR)/Src_drive_font.o \
-    $(OBJDIR)/Src_drive_gpio.o \
-    $(OBJDIR)/Src_drive_gt9147.o \
-    $(OBJDIR)/Src_drive_iic.o \
-    $(OBJDIR)/Src_drive_iwdg.o \
-    $(OBJDIR)/Src_drive_lcd.o \
-    $(OBJDIR)/Src_drive_lcd_touch.o \
-    $(OBJDIR)/Src_drive_mpu9250.o \
-    $(OBJDIR)/Src_drive_numberlib.o \
-    $(OBJDIR)/Src_drive_oled.o \
-    $(OBJDIR)/Src_drive_rtc.o \
-    $(OBJDIR)/Src_drive_sdram.o \
-    $(OBJDIR)/Src_drive_softspi.o \
-    $(OBJDIR)/Src_drive_spi.o \
-    $(OBJDIR)/Src_drive_timer.o \
-    $(OBJDIR)/Src_drive_usart.o
+    $(OBJDIR)/Src_driver_ad7705_softspi.o \
+    $(OBJDIR)/Src_driver_at24cxx.o \
+    $(OBJDIR)/Src_driver_delay.o \
+    $(OBJDIR)/Src_driver_digital_filter.o \
+    $(OBJDIR)/Src_driver_ds18b20.o \
+    $(OBJDIR)/Src_driver_exti.o \
+    $(OBJDIR)/Src_driver_font.o \
+    $(OBJDIR)/Src_driver_gpio.o \
+    $(OBJDIR)/Src_driver_gt9147.o \
+    $(OBJDIR)/Src_driver_iic.o \
+    $(OBJDIR)/Src_driver_iwdg.o \
+    $(OBJDIR)/Src_driver_lcd.o \
+    $(OBJDIR)/Src_driver_lcd_touch.o \
+    $(OBJDIR)/Src_driver_mpu9250.o \
+    $(OBJDIR)/Src_driver_numberlib.o \
+    $(OBJDIR)/Src_driver_oled.o \
+    $(OBJDIR)/Src_driver_rtc.o \
+    $(OBJDIR)/Src_driver_sdram.o \
+    $(OBJDIR)/Src_driver_softspi.o \
+    $(OBJDIR)/Src_driver_spi.o \
+    $(OBJDIR)/Src_driver_timer.o \
+    $(OBJDIR)/Src_driver_usart.o
 #user's object compile:
 $(OBJDIR)/Src_main.o: $(ROOTDIR)/Src/main.c
 	$(call compile_c)
@@ -38,47 +38,47 @@ $(OBJDIR)/Src_user_pid.o: $(ROOTDIR)/Src/user_pid.c
 	$(call compile_c)
 $(OBJDIR)/Src_user_setting_interface.o: $(ROOTDIR)/Src/user_setting_interface.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_ad7705_softspi.o: $(ROOTDIR)/Src/drive/ad7705_softspi.c
+$(OBJDIR)/Src_driver_ad7705_softspi.o: $(ROOTDIR)/Src/driver/ad7705_softspi.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_at24cxx.o: $(ROOTDIR)/Src/drive/at24cxx.c
+$(OBJDIR)/Src_driver_at24cxx.o: $(ROOTDIR)/Src/driver/at24cxx.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_delay.o: $(ROOTDIR)/Src/drive/delay.c
+$(OBJDIR)/Src_driver_delay.o: $(ROOTDIR)/Src/driver/delay.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_digital_filter.o: $(ROOTDIR)/Src/drive/digital_filter.c
+$(OBJDIR)/Src_driver_digital_filter.o: $(ROOTDIR)/Src/driver/digital_filter.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_ds18b20.o: $(ROOTDIR)/Src/drive/ds18b20.c
+$(OBJDIR)/Src_driver_ds18b20.o: $(ROOTDIR)/Src/driver/ds18b20.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_exti.o: $(ROOTDIR)/Src/drive/exti.c
+$(OBJDIR)/Src_driver_exti.o: $(ROOTDIR)/Src/driver/exti.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_font.o: $(ROOTDIR)/Src/drive/font.c
+$(OBJDIR)/Src_driver_font.o: $(ROOTDIR)/Src/driver/font.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_gpio.o: $(ROOTDIR)/Src/drive/gpio.c
+$(OBJDIR)/Src_driver_gpio.o: $(ROOTDIR)/Src/driver/gpio.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_gt9147.o: $(ROOTDIR)/Src/drive/gt9147.c
+$(OBJDIR)/Src_driver_gt9147.o: $(ROOTDIR)/Src/driver/gt9147.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_iic.o: $(ROOTDIR)/Src/drive/iic.c
+$(OBJDIR)/Src_driver_iic.o: $(ROOTDIR)/Src/driver/iic.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_iwdg.o: $(ROOTDIR)/Src/drive/iwdg.c
+$(OBJDIR)/Src_driver_iwdg.o: $(ROOTDIR)/Src/driver/iwdg.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_lcd.o: $(ROOTDIR)/Src/drive/lcd.c
+$(OBJDIR)/Src_driver_lcd.o: $(ROOTDIR)/Src/driver/lcd.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_lcd_touch.o: $(ROOTDIR)/Src/drive/lcd_touch.c
+$(OBJDIR)/Src_driver_lcd_touch.o: $(ROOTDIR)/Src/driver/lcd_touch.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_mpu9250.o: $(ROOTDIR)/Src/drive/mpu9250.c
+$(OBJDIR)/Src_driver_mpu9250.o: $(ROOTDIR)/Src/driver/mpu9250.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_numberlib.o: $(ROOTDIR)/Src/drive/numberlib.c
+$(OBJDIR)/Src_driver_numberlib.o: $(ROOTDIR)/Src/driver/numberlib.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_oled.o: $(ROOTDIR)/Src/drive/oled.c
+$(OBJDIR)/Src_driver_oled.o: $(ROOTDIR)/Src/driver/oled.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_rtc.o: $(ROOTDIR)/Src/drive/rtc.c
+$(OBJDIR)/Src_driver_rtc.o: $(ROOTDIR)/Src/driver/rtc.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_sdram.o: $(ROOTDIR)/Src/drive/sdram.c
+$(OBJDIR)/Src_driver_sdram.o: $(ROOTDIR)/Src/driver/sdram.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_softspi.o: $(ROOTDIR)/Src/drive/softspi.c
+$(OBJDIR)/Src_driver_softspi.o: $(ROOTDIR)/Src/driver/softspi.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_spi.o: $(ROOTDIR)/Src/drive/spi.c
+$(OBJDIR)/Src_driver_spi.o: $(ROOTDIR)/Src/driver/spi.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_timer.o: $(ROOTDIR)/Src/drive/timer.c
+$(OBJDIR)/Src_driver_timer.o: $(ROOTDIR)/Src/driver/timer.c
 	$(call compile_c)
-$(OBJDIR)/Src_drive_usart.o: $(ROOTDIR)/Src/drive/usart.c
+$(OBJDIR)/Src_driver_usart.o: $(ROOTDIR)/Src/driver/usart.c
 	$(call compile_c)

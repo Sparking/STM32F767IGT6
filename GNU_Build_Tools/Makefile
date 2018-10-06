@@ -62,7 +62,7 @@ MARCO_DEF      = \
     -DUNALIGNED_SUPPORT_DISABLE
 INC_OPT = \
     -I$(ROOTDIR)/Src/include           \
-    -I$(ROOTDIR)/Src/drive/include     \
+    -I$(ROOTDIR)/Src/driver/include    \
     -I$(ROOTDIR)/System/core           \
     -I$(ROOTDIR)/System/device/include \
     -I$(ROOTDIR)/System/HAL_Driver/Inc \
@@ -110,8 +110,6 @@ define objcopy_ihex
 @echo "    GEN   $(subst $(ROOTDIR)$(DIR_DIV),,$@)"
 @$(OBJCOPY) -O ihex $< $@
 endef
-
-include scripts/objects.mk
 
 # base system objects
 SYSOBJS  = \
@@ -216,12 +214,14 @@ KERNEL_PORTOBJS = \
     $(OBJDIR)/port.o        \
     $(OBJDIR)/heap_4.o
 
-OBJS = $(HALOBJS) $(SYSOBJS) $(KERNEL_COREOBJS) $(KERNEL_PORTOBJS) $(USEROBJS)
-
-
 #build options
 .PHONY:all clean init
 all: init $(BINARY)
+
+include scripts/objects.mk
+
+OBJS = $(HALOBJS) $(SYSOBJS) $(KERNEL_COREOBJS) $(KERNEL_PORTOBJS) $(USEROBJS)
+
 clean:
 	@echo clean all object files.
 	-@cd $(OBJDIR) && $(RM) *.o
@@ -266,4 +266,3 @@ $(OBJDIR)/port.o: $(KERNEL_DIR)/portable/GCC/ARM_CM7/r0p1/port.c
 	$(call compile_c)
 $(OBJDIR)/heap_4.o: $(KERNEL_DIR)/portable/MemMang/heap_4.c
 	$(call compile_c)
-
