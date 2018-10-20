@@ -1,35 +1,35 @@
 #include "iic.h"
 
 /* IIC 读取SDA的电平 */
-#define IIC_ReadSDA(_IIC)                       \
-    HAL_GPIO_ReadPin((_IIC)->interface->SDA.GPIO,   \
-        (_IIC)->interface->SDA.Pin)
+#define IIC_ReadSDA(dev) \
+    HAL_GPIO_ReadPin((dev)->interface->SDA.GPIO, \
+        (dev)->interface->SDA.Pin)
 /* IIC SDA引脚写入高低电平 */
-#define IIC_WriteSDA(_IIC,_IIC_binary)              \
-    HAL_GPIO_WritePin((_IIC)->interface->SDA.GPIO,  \
-        (_IIC)->interface->SDA.Pin,         \
-        (_IIC_binary) ? GPIO_PIN_SET : GPIO_PIN_RESET)
+#define IIC_WriteSDA(dev,dev_binary) \
+    HAL_GPIO_WritePin((dev)->interface->SDA.GPIO, \
+        (dev)->interface->SDA.Pin, \
+        (dev_binary) ? GPIO_PIN_SET : GPIO_PIN_RESET)
 /* IIC SDA引脚写入高电平 */
-#define IIC_SetSDA(_IIC)                    \
-    HAL_GPIO_WritePin((_IIC)->interface->SDA.GPIO,  \
-        (_IIC)->interface->SDA.Pin, GPIO_PIN_SET)
+#define IIC_SetSDA(dev) \
+    HAL_GPIO_WritePin((dev)->interface->SDA.GPIO, \
+        (dev)->interface->SDA.Pin, GPIO_PIN_SET)
 /* IIC SDA引脚写入低电平 */
-#define IIC_ResetSDA(_IIC)                      \
-    HAL_GPIO_WritePin((_IIC)->interface->SDA.GPIO,  \
-        (_IIC)->interface->SDA.Pin, GPIO_PIN_RESET)
+#define IIC_ResetSDA(dev) \
+    HAL_GPIO_WritePin((dev)->interface->SDA.GPIO, \
+        (dev)->interface->SDA.Pin, GPIO_PIN_RESET)
 /* IIC SCK引脚拉高 */
-#define IIC_SetSCL(_IIC)                    \
-    HAL_GPIO_WritePin((_IIC)->interface->SCL.GPIO,  \
-        (_IIC)->interface->SCL.Pin, GPIO_PIN_SET)
+#define IIC_SetSCL(dev) \
+    HAL_GPIO_WritePin((dev)->interface->SCL.GPIO, \
+        (dev)->interface->SCL.Pin, GPIO_PIN_SET)
 /* IIC SCK引脚拉低 */
-#define IIC_ResetSCL(_IIC)                      \
-    HAL_GPIO_WritePin((_IIC)->interface->SCL.GPIO,  \
-        (_IIC)->interface->SCL.Pin, GPIO_PIN_RESET)
+#define IIC_ResetSCL(dev) \
+    HAL_GPIO_WritePin((dev)->interface->SCL.GPIO, \
+        (dev)->interface->SCL.Pin, GPIO_PIN_RESET)
 /* 切换IIC SDA引脚的模式 */
-#define IIC_SwitchSDAMode(_IIC, _mode)              \
-    GPIO_EasySwitchPinMode(                 \
-        (_IIC)->interface->SDA.GPIO,        \
-        (_IIC)->interface->SDA.Pin, (_mode))
+#define IIC_SwitchSDAMode(dev, mode) \
+    GPIO_EasySwitchPinMode( \
+        (dev)->interface->SDA.GPIO, \
+        (dev)->interface->SDA.Pin, (mode))
 #define IIC_SDA_MODE_INPUT   GPIO_MODE_INPUT     /* SDA输入模式 */
 #define IIC_SDA_MODE_OUT     GPIO_MODE_OUTPUT_PP /* SDA输出模式 */
 
