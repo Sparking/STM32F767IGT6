@@ -6,6 +6,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "cli.h"
+
 #include "at24cxx.h"
 #include "delay.h"
 #include "gpio.h"

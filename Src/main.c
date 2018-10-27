@@ -22,7 +22,7 @@ const char *const String = "XXC Test.\r\n";
 /*
  * 将字符串全部填为空格符
  */
-void  Fill_Str(char *str, int n)
+static void Fill_Str(char *str, int n)
 {
         int len = strlen(str);
         while (len < n - 1)
@@ -30,7 +30,7 @@ void  Fill_Str(char *str, int n)
         str[len] = '\0';
 }
 
-void LCD_Show(void)
+static void exec_show_lcd(struct command_data_block *pcdb)
 {
         char str[29];
         LCD_CharConfigTypeDef LCD_String;
@@ -68,7 +68,7 @@ void EXTI15_10_IRQHandler(void)
 {  
 }
 
-void main_init(void)
+static void main_init(void)
 {
         unsigned char i;
         RTC_DateTypeDef date;
@@ -81,6 +81,8 @@ void main_init(void)
         i2c_int1.SDA.Pin  = GPIO_PIN_5;
 
         HAL_Init();
+        UART_Init();
+        printf("UART Initialized successed!\r\n");
         SDRAM_Init();
         LCD_Init();
         LCD_Touch_Init();
@@ -92,8 +94,6 @@ void main_init(void)
         RTC_ConfigDate(&date, 18, 4, 25, 3);
         RTC_Init(&time, &date);
         RTC_WeakUp_Enable(WKUP_CLK_PRE_16, 2048); /* 1秒1次唤醒中断 */
-        UART_Init();
-        printf("UART Initialized successed!\r\n");
         IIC_Interface_Init(&i2c_int1);
         AT24CXX_Init(&at24c02_dev, &i2c_int1, 0);
         while (!AT24CXX_Check(&at24c02_dev)) {
@@ -107,56 +107,136 @@ void main_init(void)
         printf("The last set value is %u.\r\n", i);
         TIM3->CCR2 = 0;
 
-        IWDG_Init();
+//        IWDG_Init();
         RTC_WKUP_IRQHandler();
+}
+
+static void exec_input(char *buff, size_t len)
+{
+    int ret;
+    unsigned int index;
+    unsigned int read_size;
+    static int tab_flag = 0;
+
+    index = 0;
+    if (tab_flag) {
+        index = strlen(buff);
+        cli_printf("%s%s",cli_prompt, buff);
+    } else {
+        cli_printf("%s", cli_prompt);
+    }
+    fflush(stdout);
+    tab_flag = 0;
+    while (index < len) {
+        read_size = USART1ReveiveStr(buff + index, 1);
+        if (buff[index] == '\r' || buff[index] == '\n') {
+            putchar('\n');
+            putchar('\r');
+            break;
+        } else if (buff[index] == '\t' || buff[index] == '?') {
+            index++;
+            tab_flag = 1;
+            break;
+        } else if (buff[index] < 127 && buff[index] > 31 && read_size == 1) {
+            index++;
+        } else if (buff[index] == 127) {
+            if (index == 0) {
+                continue;
+            }
+            index--;
+            putchar('\b');
+            putchar(' ');
+            putchar('\b');
+        }
+    }
+    buff[index] = '\0';
+    if ((ret = cli_exec(buff, len)) < 0) {
+        cli_printf("unknow command!\n\r");
+    }
+}
+
+static void exec_show_version(struct command_data_block *pcdb)
+{
+    cli_printf("STM32F767IGT6\r\n");
+}
+
+static void exec_show_version_detail(struct command_data_block *pcdb)
+{
+    cli_printf("STM32F767IGT6\r\n");
+    cli_printf("Memory: 512K\r\n");
+    cli_printf("Flash:  1024KB\r\n");
+}
+
+static void exec_show_specfial_log(struct command_data_block *pcdb)
+{
+    cli_printf("%.*s\r\n", pcdb->data_block.string.size, pcdb->data_block.string.string);
+}
+
+static void exec_at24c02_show(struct command_data_block *pcdb)
+{
+    unsigned char i;
+    AT24CXX_ReadByte(&at24c02_dev, 1, &i);
+    cli_printf("%d\n\r", i);
+}
+
+static void exec_at24c02_set_value(struct command_data_block *pcdb)
+{
+    int ret;
+    unsigned char i;
+    char *tmp;
+
+    tmp = (char *)malloc(pcdb->data_block.string.size + 1);
+    if (tmp == NULL) {
+        cli_printf("error: has no memeory\r\n");
+        return;
+    }
+
+    strncpy(tmp, pcdb->data_block.string.string, pcdb->data_block.string.size + 1);
+    ret = sscanf(tmp, "%h", &i);
+    free(tmp);
+    if (ret != 1) {
+        cli_printf("error: wrong format data\r\n");
+        return;
+    } else {
+        cli_printf("set value to %d\r\n", i);
+    }
+
+    AT24CXX_WriteByte(&at24c02_dev, 1, i);
+}
+
+static void exec_clear(struct command_data_block *pcdb)
+{
+    cli_printf("\f");
+}
+
+static void cli_init(void)
+{
+    struct command_data_block *pcdb[5];
+
+    pcdb[0] = cli_regist_command("show", "show info", NULL, NULL, NULL);
+    pcdb[1] = cli_regist_command("version", "show version", NULL, pcdb[0],
+            exec_show_version);
+    pcdb[2] = cli_regist_command("log", "show log", NULL, pcdb[0], NULL);
+    pcdb[3] = cli_regist_command("at24c02", "operations for at24c02", NULL, NULL, NULL);
+    (void)cli_regist_command("detail", "show version detail", NULL, pcdb[1], exec_show_version_detail);
+    (void)cli_regist_string("show detail log", NULL, pcdb[2], exec_show_specfial_log);
+    (void)cli_regist_command("show_lcd", "show lcd", NULL, NULL, exec_show_lcd);
+    (void)cli_regist_command("clear", "clean screen", NULL, NULL, exec_clear);
+    (void)cli_regist_command("show", "show at24c02 info", NULL, pcdb[3], exec_at24c02_show);
+    pcdb[4] = cli_regist_command("set", "set at24c02 first byte", NULL, pcdb[3], NULL);
+    (void)cli_regist_string("an integer", NULL, pcdb[4], exec_at24c02_set_value);
 }
 
 int main(void)
 {
-    unsigned int temp;
-    unsigned char heat_flag;
-    unsigned short times;
+    char cmdline[1024];
 
     main_init();
-    times = 0;
-    AT24CXX_ReadByte(&at24c02_dev, 1, &heat_flag);
+    cli_init();
+
     while (1) {
-        if (times % 200 == 0) {
-            IWDG_Feed();
-        }
-        if (times % 500 == 0) {
-            LCD_Show();
-        }
-        if (times % 50000 == 0) {
-            printf("flag is %d.\r\n", heat_flag);
-        }
-        switch (Key_Scan(KEY_SCAN_MODE_KLI)) {
-        case KEY0_PRESSED:
-            heat_flag = !heat_flag;
-            AT24CXX_WriteByte(&at24c02_dev, 1, heat_flag);
-            printf("Change heat mode!\r\n");
-            break;
-        case KEY1_PRESSED:
-            if (user_interface_readkeyboard(&temp, 8)) {
-                IWDG_Feed();
-                printf("input %d\r\n", temp);
-                if (temp <= 100) {
-                    AT24CXX_WriteByte(&at24c02_dev, 0, (unsigned char)temp);
-                }
-            }
-            break;
-        case KEY2_PRESSED:
-            printf("pressed key2\r\n");
-            break;
-        case WK_UP_PRESSED:
-            printf("pressed weakup key\r\n");
-            break;
-        default:
-            break;
-        }
-        heat_flag %= 4;
-        delayms(1);
-        times++;
+        exec_input(cmdline, 1023);
+        fflush(stdout);
     }
 }
 

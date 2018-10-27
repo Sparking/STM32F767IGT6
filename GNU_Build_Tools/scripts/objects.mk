@@ -1,5 +1,6 @@
 #user's object files:
 USEROBJS =  \
+    $(OBJDIR)/Src_cli.o \
     $(OBJDIR)/Src_main.o \
     $(OBJDIR)/Src_user_gui.o \
     $(OBJDIR)/Src_user_lcd_touch.o \
@@ -28,6 +29,8 @@ USEROBJS =  \
     $(OBJDIR)/Src_driver_timer.o \
     $(OBJDIR)/Src_driver_usart.o
 #user's object compile:
+$(OBJDIR)/Src_cli.o: $(ROOTDIR)/Src/cli.c
+	$(call compile_c)
 $(OBJDIR)/Src_main.o: $(ROOTDIR)/Src/main.c
 	$(call compile_c)
 $(OBJDIR)/Src_user_gui.o: $(ROOTDIR)/Src/user_gui.c

@@ -17,7 +17,7 @@
         <TargetCommonOption>
           <Device>STM32F767IGTx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F7xx_DFP.2.9.0</PackID>
+          <PackID>Keil.STM32F7xx_DFP.2.11.0</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
           <Cpu>IRAM(0x20020000,0x60000) IRAM2(0x20000000,0x20000) IROM(0x08000000,0x100000) IROM2(0x00200000,0x100000) CPUTYPE("Cortex-M7") FPU3(DFPU) CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -169,6 +169,7 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>3</RvdsVP>
+            <RvdsMve>0</RvdsMve>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>1</hadIROM2>
             <OnChipMemories>
@@ -243,7 +244,7 @@
               <MiscControls>-std=gnu99 --specs=nano.specs --specs=nosys.specs -mfloat-abi=hard -mfpu=fpv5-d16 -ffunction-sections -fdata-sections -u  _printf_float</MiscControls>
               <Define>USE_HAL_DRIVER,ARM_MATH_CM7,__FPU_PRESENT,__FPU_USED=1U</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Src\include;.\System\core;.\System\device\include;.\System\HAL_Driver\Inc;.\System\FreeRTOS_Kernel\include;.\System\FreeRTOS_Kernel\portable\GCC\ARM_CM7\r0p1;.\Src\drive\include</IncludePath>
+              <IncludePath>.\Src\driver\include;.\Src\include;.\System\core;.\System\device\include;.\System\HAL_Driver\Inc;.\System\FreeRTOS_Kernel\include;.\System\FreeRTOS_Kernel\portable\GCC\ARM_CM7\r0p1;.\Src\drive\include</IncludePath>
             </VariousControls>
           </Carm>
           <Aarm>
@@ -622,11 +623,6 @@
               <FilePath>.\System\HAL_Driver\Src\stm32f7xx_ll_gpio.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f7xx_ll_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\System\HAL_Driver\Src\stm32f7xx_ll_i2c.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f7xx_ll_lptim.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\System\HAL_Driver\Src\stm32f7xx_ll_lptim.c</FilePath>
@@ -717,104 +713,114 @@
           <GroupName>Src</GroupName>
           <Files>
             <File>
+              <FileName>ad7705_softspi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\ad7705_softspi.c</FilePath>
+            </File>
+            <File>
               <FileName>at24cxx.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Src\drive\at24cxx.c</FilePath>
+              <FilePath>.\Src\driver\at24cxx.c</FilePath>
             </File>
             <File>
               <FileName>delay.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Src\drive\delay.c</FilePath>
-            </File>
-            <File>
-              <FileName>font.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\font.c</FilePath>
-            </File>
-            <File>
-              <FileName>gpio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\gpio.c</FilePath>
-            </File>
-            <File>
-              <FileName>gt9147.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\gt9147.c</FilePath>
-            </File>
-            <File>
-              <FileName>iic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\iic.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_touch.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\lcd_touch.c</FilePath>
-            </File>
-            <File>
-              <FileName>numberlib.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\numberlib.c</FilePath>
-            </File>
-            <File>
-              <FileName>rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\rtc.c</FilePath>
-            </File>
-            <File>
-              <FileName>sdram.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\sdram.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\usart.c</FilePath>
-            </File>
-            <File>
-              <FileName>exti.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\exti.c</FilePath>
-            </File>
-            <File>
-              <FileName>timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\timer.c</FilePath>
-            </File>
-            <File>
-              <FileName>ds18b20.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\ds18b20.c</FilePath>
-            </File>
-            <File>
-              <FileName>oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\oled.c</FilePath>
-            </File>
-            <File>
-              <FileName>ad7705_softspi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\ad7705_softspi.c</FilePath>
-            </File>
-            <File>
-              <FileName>softspi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\drive\softspi.c</FilePath>
+              <FilePath>.\Src\driver\delay.c</FilePath>
             </File>
             <File>
               <FileName>digital_filter.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Src\drive\digital_filter.c</FilePath>
+              <FilePath>.\Src\driver\digital_filter.c</FilePath>
+            </File>
+            <File>
+              <FileName>ds18b20.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\ds18b20.c</FilePath>
+            </File>
+            <File>
+              <FileName>exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>font.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\font.c</FilePath>
+            </File>
+            <File>
+              <FileName>gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>gt9147.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\gt9147.c</FilePath>
+            </File>
+            <File>
+              <FileName>iic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\iic.c</FilePath>
             </File>
             <File>
               <FileName>iwdg.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Src\drive\iwdg.c</FilePath>
+              <FilePath>.\Src\driver\iwdg.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd_touch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\lcd_touch.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpu9250.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\mpu9250.c</FilePath>
+            </File>
+            <File>
+              <FileName>numberlib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\numberlib.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>sdram.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\sdram.c</FilePath>
+            </File>
+            <File>
+              <FileName>softspi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\softspi.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\driver\usart.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -890,6 +896,11 @@
               <FileName>user_pid.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Src\user_pid.c</FilePath>
+            </File>
+            <File>
+              <FileName>cli.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\cli.c</FilePath>
             </File>
           </Files>
         </Group>

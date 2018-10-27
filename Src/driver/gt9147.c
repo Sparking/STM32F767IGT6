@@ -146,15 +146,13 @@ unsigned char GT9147_Init(void)
     GPIO_Initure.Pull  = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOH, &GPIO_Initure);
     delayms(100);
-    GT9147_RD_Reg(dev, GT_PID_REG, temp, 4); /* 读取PID寄存器 */
+    GT9147_RD_Reg(dev, GT_PID_REG, temp, 4);  /* 读取PID寄存器 */
     temp[4] = '\0';
-    printf("CTP PID:%s\r\n", temp);
     temp[0] = 0X02;
     GT9147_WR_Reg(dev, GT_CTRL_REG, temp, 1); /* 软复位GT9147 */
     GT9147_RD_Reg(dev, GT_CFGS_REG, temp, 1); /* 读取GT_CFGS_REG寄存器 */
     /* 默认版本比较低,需要更新flash配置 */
     if (temp[0] < 0X60) {
-        printf("Default Ver:%d\r\n", temp[0]);
 #ifdef SUPPORT_TOUCH_DEVICE_0x5510
         GT9147_Send_Cfg(dev, 1); 
 #endif
