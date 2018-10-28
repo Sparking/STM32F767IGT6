@@ -9,6 +9,26 @@ static struct command_data_block *cli_tree_root_next = NULL;
 #define cli_entry(p, m) ((struct command_data_block *)cli_offset(p, m))
 #define cli_tree_root   (*cli_entry(&cli_tree_root_next, next))
 
+static void _release_cli_tree_node(struct command_data_block *pcdb)
+{
+    if (pcdb) {
+        _release_cli_tree_node(pcdb->alt);
+        _release_cli_tree_node(pcdb->next);
+        if (pcdb->data_block_type == COMMAND_DATA_BLOCK_TYPE_COMMAND) {
+           cli_printf("release command node: <%s: %s>\n",
+                  pcdb->data_block.command, pcdb->desc);
+        } else if (pcdb->data_block_type == COMMAND_DATA_BLOCK_TYPE_STRING) {
+           cli_printf("release string node: <%s>\n", pcdb->desc);
+        }
+        free(pcdb);
+    }
+}
+
+void release_cli_tree(void)
+{
+    _release_cli_tree_node(cli_tree_root.next);
+}
+
 static inline char is_correct_char_in_depends_name(char c)
 {
     return c != ' ' && c != '\0';
@@ -326,7 +346,8 @@ int cli_exec(char *buf, size_t size)
                     ret = buf + size - keyword;
                 }
                 if (first_alt->data_block_type == COMMAND_DATA_BLOCK_TYPE_COMMAND) {
-                    strncpy(keyword, first_alt->data_block.command, ret);
+                    memcpy(keyword, first_alt->data_block.command, ret);
+                    keyword[ret] = '\0';
                 }
                 if (buf + size < keyword + ret + 1) {
                     cli_printf("waring: this cli input buffer is full!\n\r");

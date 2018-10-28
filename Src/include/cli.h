@@ -56,5 +56,7 @@ extern struct command_data_block *cli_regist_string(
         void (*exec)(struct command_data_block *));
 
 extern int cli_exec(char *buf, size_t size);
-		
+
+extern void release_cli_tree(void);
+
 #endif /* End of _NASSURA_CLI_H_ */

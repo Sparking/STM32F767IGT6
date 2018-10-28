@@ -149,9 +149,10 @@ static void exec_input(char *buff, size_t len)
             putchar('\b');
         }
     }
+
     buff[index] = '\0';
     if ((ret = cli_exec(buff, len)) < 0) {
-        cli_printf("unknow command!\n\r");
+        cli_printf("unknow command!\r\n");
     }
 }
 
@@ -176,32 +177,33 @@ static void exec_at24c02_show(struct command_data_block *pcdb)
 {
     unsigned char i;
     AT24CXX_ReadByte(&at24c02_dev, 1, &i);
-    cli_printf("%d\n\r", i);
+    cli_printf("%d\n", i);
 }
 
 static void exec_at24c02_set_value(struct command_data_block *pcdb)
 {
     int ret;
-    unsigned char i;
+    int i;
     char *tmp;
 
     tmp = (char *)malloc(pcdb->data_block.string.size + 1);
     if (tmp == NULL) {
-        cli_printf("error: has no memeory\r\n");
+        cli_printf("error: has no memeory\n");
         return;
     }
 
     strncpy(tmp, pcdb->data_block.string.string, pcdb->data_block.string.size + 1);
-    ret = sscanf(tmp, "%h", &i);
+    ret = sscanf(tmp, "%d", &i);
     free(tmp);
     if (ret != 1) {
-        cli_printf("error: wrong format data\r\n");
+        cli_printf("error: wrong format data\n");
         return;
     } else {
-        cli_printf("set value to %d\r\n", i);
+	i &= 0xFFU;
+        cli_printf("set value to %d\n", i);
     }
 
-    AT24CXX_WriteByte(&at24c02_dev, 1, i);
+    AT24CXX_WriteByte(&at24c02_dev, 1, (char)i);
 }
 
 static void exec_clear(struct command_data_block *pcdb)
