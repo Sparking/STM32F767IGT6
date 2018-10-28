@@ -119,18 +119,16 @@ static void exec_input(char *buff, size_t len)
     static int tab_flag = 0;
 
     index = 0;
+    cli_printf("%s", cli_prompt);
     if (tab_flag) {
         index = strlen(buff);
-        cli_printf("%s%s",cli_prompt, buff);
-    } else {
-        cli_printf("%s", cli_prompt);
+        cli_printf("%s", buff);
     }
     fflush(stdout);
     tab_flag = 0;
     while (index < len) {
         read_size = USART1ReveiveStr(buff + index, 1);
         if (buff[index] == '\r' || buff[index] == '\n') {
-            putchar('\n');
             putchar('\r');
             break;
         } else if (buff[index] == '\t' || buff[index] == '?') {
@@ -147,6 +145,7 @@ static void exec_input(char *buff, size_t len)
             putchar('\b');
             putchar(' ');
             putchar('\b');
+            fflush(stdout);
         }
     }
 
@@ -159,6 +158,19 @@ static void exec_input(char *buff, size_t len)
 static void exec_show_version(struct command_data_block *pcdb)
 {
     cli_printf("STM32F767IGT6\r\n");
+}
+
+static void exec_quit(struct command_data_block *pcdb)
+{
+    int *quit_flag;
+
+    release_cli_tree();
+
+    quit_flag = (int *)pcdb->private_data;
+    if (quit_flag) {
+        *quit_flag = 1;
+    }
+    cli_printf("the cli tree is released, and cli is not available\n");
 }
 
 static void exec_show_version_detail(struct command_data_block *pcdb)
@@ -211,6 +223,8 @@ static void exec_clear(struct command_data_block *pcdb)
     cli_printf("\f");
 }
 
+static int quit_flag = 0;
+
 static void cli_init(void)
 {
     struct command_data_block *pcdb[5];
@@ -227,6 +241,7 @@ static void cli_init(void)
     (void)cli_regist_command("show", "show at24c02 info", NULL, pcdb[3], exec_at24c02_show);
     pcdb[4] = cli_regist_command("set", "set at24c02 first byte", NULL, pcdb[3], NULL);
     (void)cli_regist_string("an integer", NULL, pcdb[4], exec_at24c02_set_value);
+    (void)cli_regist_command("quit", "quit cli, be careful to use", (void *)&quit_flag, NULL, exec_quit);
 }
 
 int main(void)
@@ -236,7 +251,7 @@ int main(void)
     main_init();
     cli_init();
 
-    while (1) {
+    while (!quit_flag) {
         exec_input(cmdline, 1023);
         fflush(stdout);
     }
