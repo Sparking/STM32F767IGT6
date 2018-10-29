@@ -78,4 +78,6 @@ extern int cli_exec(char *buf, size_t size);
 
 extern void release_cli_tree(void);
 
+extern struct command_data_block *cli_first_command_data_block(void);
+
 #endif /* End of _NASSURA_CLI_H_ */

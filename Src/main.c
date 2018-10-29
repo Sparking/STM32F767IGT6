@@ -155,6 +155,33 @@ static void exec_input(char *buff, size_t len)
     }
 }
 
+static void trave_pcdb(struct command_data_block *pcdb, int i)
+{
+    if (pcdb) {
+        for (int j = 0; j < i; j++) {
+            putchar('-');
+            putchar('-');
+        }
+        switch (pcdb->data_block_type) {
+        case COMMAND_DATA_BLOCK_TYPE_COMMAND:
+            cli_printf("%s\n", pcdb->data_block.command);
+            break;
+        default:
+            cli_printf("WORD\n");
+            break;
+        }
+        trave_pcdb(pcdb->next, i + 1);
+        trave_pcdb(pcdb->alt, i);
+    }
+}
+
+static void exec_help(struct command_data_block *pcdb)
+{
+    struct command_data_block *first = cli_first_command_data_block();
+
+    trave_pcdb(first, 0);
+}
+
 static void exec_show_version(struct command_data_block *pcdb)
 {
     cli_printf("STM32F767IGT6\r\n");
@@ -242,6 +269,7 @@ static void cli_init(void)
     pcdb[4] = cli_regist_command("set", "set at24c02 first byte", NULL, pcdb[3], NULL);
     (void)cli_regist_string("an integer", NULL, pcdb[4], exec_at24c02_set_value);
     (void)cli_regist_command("quit", "quit cli, be careful to use", (void *)&quit_flag, NULL, exec_quit);
+    (void)cli_regist_command("help", "show cli tree", NULL, NULL, exec_help);
 }
 
 int main(void)

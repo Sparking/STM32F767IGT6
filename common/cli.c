@@ -19,6 +19,11 @@ static struct {
     int _1;
 } _cli_tree_root = {NULL, 0};
 
+struct command_data_block *cli_first_command_data_block(void)
+{
+    return cli_tree_root.next;
+}
+
 static void _release_cli_tree_node(struct command_data_block *pcdb)
 {
     if (pcdb) {
