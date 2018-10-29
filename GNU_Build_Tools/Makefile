@@ -15,6 +15,7 @@ endif
 
 OUTPUTDIR  = $(ROOTDIR)$(DIR_DIV)Build
 OBJDIR     = $(OUTPUTDIR)$(DIR_DIV)GCC_Objects
+COMMON_DIR = $(ROOTDIR)/common
 KERNEL_DIR = $(ROOTDIR)/System/FreeRTOS_Kernel
 
 #Images
@@ -61,6 +62,7 @@ MARCO_DEF      = \
     -D__FPU_USED=1U  \
     -DUNALIGNED_SUPPORT_DISABLE
 INC_OPT = \
+	-I$(COMMON_DIR)/include            \
     -I$(ROOTDIR)/Src/include           \
     -I$(ROOTDIR)/Src/driver/include    \
     -I$(ROOTDIR)/System/core           \
@@ -110,6 +112,11 @@ define objcopy_ihex
 @echo "    GEN   $(subst $(ROOTDIR)$(DIR_DIV),,$@)"
 @$(OBJCOPY) -O ihex $< $@
 endef
+
+# common objects
+COMMON_OBJS = \
+	$(OBJDIR)/bufchain.o \
+	$(OBJDIR)/cli.o
 
 # base system objects
 SYSOBJS  = \
@@ -220,7 +227,7 @@ all: init $(BINARY)
 
 include scripts/objects.mk
 
-OBJS = $(HALOBJS) $(SYSOBJS) $(KERNEL_COREOBJS) $(KERNEL_PORTOBJS) $(USEROBJS)
+OBJS = $(HALOBJS) $(SYSOBJS) $(KERNEL_COREOBJS) $(KERNEL_PORTOBJS) $(USEROBJS) $(COMMON_OBJS)
 
 clean:
 	@echo clean all object files.
@@ -266,3 +273,8 @@ $(OBJDIR)/port.o: $(KERNEL_DIR)/portable/GCC/ARM_CM7/r0p1/port.c
 	$(call compile_c)
 $(OBJDIR)/heap_4.o: $(KERNEL_DIR)/portable/MemMang/heap_4.c
 	$(call compile_c)
+
+#common objects
+$(COMMON_OBJS): $(OBJDIR)/%.o: $(COMMON_DIR)/%.c
+	$(call compile_c)
+

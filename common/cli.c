@@ -1,13 +1,23 @@
 #include <stdlib.h>
 #include <string.h>
+
 #include "cli.h"
 
-char *cli_prompt = "#";
-static struct command_data_block *cli_tree_root_next = NULL;
+/* 计算结构体成员在结构体中的偏移量 */
 #define cli_offset(p, m) \
-    ((char *)(p) - (char *)&((struct command_data_block *)0)->next)
+    ((char *)(p) - (char *)&((struct command_data_block *)0)->m)
+/* 父结构体的入口 */
 #define cli_entry(p, m) ((struct command_data_block *)cli_offset(p, m))
-#define cli_tree_root   (*cli_entry(&cli_tree_root_next, next))
+/* 命令树的根结点，只有next成员是有效的，是一个虚拟的节点，可使程序逻辑清晰 */
+#define cli_tree_root   (*cli_entry(&_cli_tree_root, next))
+
+/* 命令提示符 */
+char *cli_prompt = "# ";
+
+static struct {
+    struct command_data_block *_0;
+    int _1;
+} _cli_tree_root = {NULL, 0};
 
 static void _release_cli_tree_node(struct command_data_block *pcdb)
 {
@@ -27,6 +37,8 @@ static void _release_cli_tree_node(struct command_data_block *pcdb)
 void release_cli_tree(void)
 {
     _release_cli_tree_node(cli_tree_root.next);
+    cli_tree_root.next = NULL;
+    cli_tree_root.next_name_max_len = 0;
 }
 
 static inline char is_correct_char_in_depends_name(char c)
@@ -126,6 +138,7 @@ static void cli_config_command_data_block(struct command_data_block *pcdb,
 static struct command_data_block *cli_append_command_pcdb_by_sort(
         struct command_data_block *super, struct command_data_block *new)
 {
+    int len;
     int comp_ret;
     struct command_data_block **prev;
 
@@ -151,6 +164,10 @@ static struct command_data_block *cli_append_command_pcdb_by_sort(
 
     new->alt = *prev;
     *prev = new;
+    len = strlen(new->data_block.command);
+    if (len > super->next_name_max_len) {
+        super->next_name_max_len = len;
+    }
 
     return new;
 }
@@ -177,6 +194,7 @@ struct command_data_block *cli_regist_command(
 static struct command_data_block *cli_append_other_type_pcdb(
         struct command_data_block *super, struct command_data_block *new)
 {
+    int len;
     struct command_data_block **prev;
 
     if (super == NULL || new->alt != NULL) {
@@ -187,12 +205,27 @@ static struct command_data_block *cli_append_other_type_pcdb(
     while (*prev) {
         if ((*prev)->data_block_type != COMMAND_DATA_BLOCK_TYPE_COMMAND) {
 out:
-            free(new);
+            cli_free(new);
             return NULL;
         }
         *prev = (*prev)->alt;
     }
     *prev = new;
+
+    switch (new->data_block_type) {
+    case COMMAND_DATA_BLOCK_TYPE_FLAGS:
+    case COMMAND_DATA_BLOCK_TYPE_STRING:
+        len = 4;
+        break;
+    case COMMAND_DATA_BLOCK_TYPE_INTEGER:
+        len = 5;
+    default:
+        break;
+    }
+
+    if (len > super->next_name_max_len) {
+        super->next_name_max_len = len;
+    }
 
     return new;
 }
@@ -230,7 +263,8 @@ static int cli_command_max_prefix_size(char *string1, char *string2)
 /**
  * return the max size of common prefix
  */
-static int cli_trave_keyword(struct command_data_block *pcdb,
+static int cli_trave_keyword(struct command_data_block *super,
+        struct command_data_block *pcdb,
         struct command_data_block **first_alt_for_tab, int *only_one_flag,
         char *prefix, int size, int print_detail_flag)
 {
@@ -241,6 +275,7 @@ static int cli_trave_keyword(struct command_data_block *pcdb,
     if (pcdb == NULL) {
         return 0;
     }
+
     if (pcdb->data_block_type == COMMAND_DATA_BLOCK_TYPE_COMMAND) {
         alt = cli_find_first_alt_with_prefix(pcdb, prefix, size);
         *only_one_flag = 1;
@@ -272,7 +307,7 @@ static int cli_trave_keyword(struct command_data_block *pcdb,
             break;
         }
         if (print_detail_flag) {
-            cli_printf("%12s: %s\n\r", name, alt->desc);
+            cli_printf("%*s: %s\n\r", super->next_name_max_len, name, alt->desc);
         } else {
             cli_printf("%s", name);
         }
@@ -310,6 +345,7 @@ static int cli_trave_keyword(struct command_data_block *pcdb,
 
 int cli_exec(char *buf, size_t size)
 {
+    struct command_data_block *super;
     struct command_data_block *pcdb;
     struct command_data_block *next;
     struct command_data_block *first_alt;
@@ -327,12 +363,13 @@ int cli_exec(char *buf, size_t size)
     pcdb = NULL;
     first_alt = NULL;
     next = cli_tree_root.next;
+    super = &cli_tree_root;
     while ((keyword = read_next_word(buf, &keyword_size)) != NULL) {
         lastc = keyword_size - 1;
         if (keyword[lastc] == '\t' || keyword[lastc] == '?') {
             putchar('\n');
             putchar('\r');
-            ret = cli_trave_keyword(next, &first_alt, &only_one_flag, keyword,
+            ret = cli_trave_keyword(super, next, &first_alt, &only_one_flag, keyword,
                     lastc, keyword[lastc] - '\t');
             keyword[lastc] = '\0';
             while (read_next_word(buf, &keyword_size))
@@ -368,6 +405,7 @@ int cli_exec(char *buf, size_t size)
             }
             return CLI_EXEC_UNKNOW;
         }
+        super = pcdb;
         next = pcdb->next;
     }
 

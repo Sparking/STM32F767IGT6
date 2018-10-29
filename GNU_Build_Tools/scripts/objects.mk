@@ -2,7 +2,6 @@
 USEROBJS =  \
     $(OBJDIR)/Src_user_lcd_touch.o \
     $(OBJDIR)/Src_main.o \
-    $(OBJDIR)/Src_cli.o \
     $(OBJDIR)/Src_user_pid.o \
     $(OBJDIR)/Src_user_gui.o \
     $(OBJDIR)/Src_user_setting_interface.o \
@@ -32,8 +31,6 @@ USEROBJS =  \
 $(OBJDIR)/Src_user_lcd_touch.o: $(ROOTDIR)/Src/user_lcd_touch.c
 	$(call compile_c)
 $(OBJDIR)/Src_main.o: $(ROOTDIR)/Src/main.c
-	$(call compile_c)
-$(OBJDIR)/Src_cli.o: $(ROOTDIR)/Src/cli.c
 	$(call compile_c)
 $(OBJDIR)/Src_user_pid.o: $(ROOTDIR)/Src/user_pid.c
 	$(call compile_c)
