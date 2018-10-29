@@ -138,6 +138,7 @@ static void cli_config_command_data_block(struct command_data_block *pcdb,
     pcdb->alt = alt;
     pcdb->next = next;
     pcdb->exec = exec;
+    pcdb->next_name_max_len = 0;
 }
 
 static struct command_data_block *cli_append_command_pcdb_by_sort(
