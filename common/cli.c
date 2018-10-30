@@ -159,7 +159,7 @@ static struct command_data_block *cli_append_command_pcdb_by_sort(
                 (comp_ret = strcasecmp((*prev)->data_block.command,
                         new->data_block.command)) >= 0) {
             if (comp_ret == 0) {
-                cli_printf("keyword %s has already been set!\n\r", new->data_block.command);
+                cli_printf("keyword %s has already been set!\n", new->data_block.command);
                 cli_free(new);
                 return NULL;
             }
@@ -313,7 +313,7 @@ static int cli_trave_keyword(struct command_data_block *super,
             break;
         }
         if (print_detail_flag) {
-            cli_printf("%*s: %s\n\r", super->next_name_max_len, name, alt->desc);
+            cli_printf("%*s: %s\n", super->next_name_max_len, name, alt->desc);
         } else {
             cli_printf("%s", name);
         }
@@ -326,7 +326,7 @@ static int cli_trave_keyword(struct command_data_block *super,
         }
 
         if (!print_detail_flag) {
-            cli_printf(alt ? "\t" : "\n\r");
+            cli_printf(alt ? "\t" : "\n");
         }
     }
     fflush(stdout);
@@ -374,7 +374,6 @@ int cli_exec(char *buf, size_t size)
         lastc = keyword_size - 1;
         if (keyword[lastc] == '\t' || keyword[lastc] == '?') {
             putchar('\n');
-            putchar('\r');
             ret = cli_trave_keyword(super, next, &first_alt, &only_one_flag, keyword,
                     lastc, keyword[lastc] - '\t');
             keyword[lastc] = '\0';
@@ -385,7 +384,7 @@ int cli_exec(char *buf, size_t size)
             }
             if (ret != 0) {
                 if (buf + size < keyword + ret) {
-                    cli_printf("waring: the cli input buffer is full!\n\r");
+                    cli_printf("waring: the cli input buffer is full!\n");
                     ret = buf + size - keyword;
                 }
                 if (first_alt->data_block_type == COMMAND_DATA_BLOCK_TYPE_COMMAND) {
@@ -393,7 +392,7 @@ int cli_exec(char *buf, size_t size)
                     keyword[ret] = '\0';
                 }
                 if (buf + size < keyword + ret + 1) {
-                    cli_printf("waring: this cli input buffer is full!\n\r");
+                    cli_printf("waring: this cli input buffer is full!\n");
                     return CLI_EXEC_READ_TAB;
                 }
                 if (only_one_flag) {
@@ -405,7 +404,7 @@ int cli_exec(char *buf, size_t size)
         }
         pcdb = cli_find_alt(next, keyword, keyword_size);
         if (pcdb == NULL) {
-            cli_printf("\'%s\'\n\r %*s\n\r", buf, (int)(1 + keyword - buf), "^");
+            cli_printf("\'%s\'\n %*s\n", buf, (int)(1 + keyword - buf), "^");
             while (read_next_word(buf, &keyword_size)) {
                 continue;
             }
@@ -421,7 +420,7 @@ none_out:
     }
 
     if (pcdb->exec == NULL) {
-        cli_printf("command %s is not end\n\r", buf);
+        cli_printf("command %s is not end\n", buf);
         ret = CLI_EXEC_NO_END;
     } else {
         pcdb->exec(pcdb);

@@ -35,12 +35,14 @@ bufchain create_bufchain(bufchain_handleoutfn_t out, unsigned int size,
     chain = (bufchain)malloc(sizeof(struct bufchain_t) + size * count);
     if (chain == NULL)
         return NULL;
+
     chain->total_counts = count;
     chain->count_size = size;
     chain->size = count * size;
     chain->offset = 0;
     chain->counts = 0;
     chain->out = out;
+
     return chain;
 }
 
@@ -90,16 +92,13 @@ int bufchain_del(bufchain chain, unsigned int counts)
     current_count_offset = chain->offset / chain->count_size;
     /* counts为实际可以出队的数据项数 */
     counts = counts < chain->counts ? counts : chain->counts;
-
     if (chain->out != NULL) { /* 使用指定的函数处理出队的数据 */
         repeat_flag = true; /* 回绕标识符 */
         end_count_offset = current_count_offset + counts;
         current_handle_counts = counts;
-
         /* 判断会不会发生回绕的情况 */
         if (end_count_offset > chain->total_counts) {
-            current_handle_counts = chain->total_counts -
-                    current_count_offset;
+            current_handle_counts = chain->total_counts - current_count_offset;
 buf_chain_del_repeat_L0:
             while (current_handle_counts > 0) { /* 出队处理 */
                 handled_counts = __buf_chain_del(chain->out, chain->buffer_begin_pos
@@ -114,11 +113,13 @@ buf_chain_del_repeat_L0:
             repeat_flag = false;
             goto buf_chain_del_repeat_L0;
         }
-    } else 
+    } else {
         __bufchain_del_counts(chain, counts);
+    }
 
     if (chain->counts == 0) /* 优化选项 */
         chain->offset = 0;
+
     return counts;
 }
 

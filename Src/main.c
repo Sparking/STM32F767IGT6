@@ -11,13 +11,13 @@
 #include "main.h"
 
 #define TIM3_FREQ         1000    /* 定时器的时钟频率设置为1KHz */
-#define TIM3_PWM2_PERIOD  500    /* 定时器的计数周期设置位500，即一个周期500ms */
+#define TIM3_PWM2_PERIOD  500     /* 定时器的计数周期设置位500，即一个周期500ms */
 extern void RTC_WKUP_IRQHandler(void);
 
 /* IIC设备接口1 */
 i2c_interface_t i2c_int1;
 i2c_device_t at24c02_dev;
-const char *const String = "XXC Test.\r\n";
+const char *const String = "XXC Test.\n";
 
 /*
  * 将字符串全部填为空格符
@@ -82,7 +82,7 @@ static void main_init(void)
 
         HAL_Init();
         UART_Init();
-        printf("UART Initialized successed!\r\n");
+        printf("UART Initialized successed!\n");
         SDRAM_Init();
         LCD_Init();
         LCD_Touch_Init();
@@ -97,14 +97,14 @@ static void main_init(void)
         IIC_Interface_Init(&i2c_int1);
         AT24CXX_Init(&at24c02_dev, &i2c_int1, 0);
         while (!AT24CXX_Check(&at24c02_dev)) {
-                printf("24C02 Check Failed!\r\n");
-                printf("Please Check!      \r\n");
+                printf("24C02 Check Failed!\n");
+                printf("Please Check!      \n");
                 delayms(500);
         }
-        printf("24C02 Ready!\r\n");
+        printf("24C02 Ready!\n");
         TIM3_PWM_Init(TIM3_FREQ, TIM3_PWM2_PERIOD, 0);
         AT24CXX_ReadByte(&at24c02_dev, 0, &i);
-        printf("The last set value is %u.\r\n", i);
+        printf("The last set value is %u.\n", i);
         TIM3->CCR2 = 0;
 
 //        IWDG_Init();
@@ -129,7 +129,6 @@ static void exec_input(char *buff, size_t len)
     while (index < len) {
         read_size = USART1ReveiveStr(buff + index, 1);
         if (buff[index] == '\r' || buff[index] == '\n') {
-            putchar('\r');
             break;
         } else if (buff[index] == '\t' || buff[index] == '?') {
             index++;
@@ -142,16 +141,13 @@ static void exec_input(char *buff, size_t len)
                 continue;
             }
             index--;
-            putchar('\b');
-            putchar(' ');
-            putchar('\b');
             fflush(stdout);
         }
     }
 
     buff[index] = '\0';
     if ((ret = cli_exec(buff, len)) < 0) {
-        cli_printf("unknow command!\r\n");
+        cli_printf("unknow command!\n");
     }
 }
 
@@ -184,7 +180,7 @@ static void exec_help(struct command_data_block *pcdb)
 
 static void exec_show_version(struct command_data_block *pcdb)
 {
-    cli_printf("STM32F767IGT6\r\n");
+    cli_printf("STM32F767IGT6\n");
 }
 
 static void exec_quit(struct command_data_block *pcdb)
@@ -192,7 +188,6 @@ static void exec_quit(struct command_data_block *pcdb)
     int *quit_flag;
 
     release_cli_tree();
-
     quit_flag = (int *)pcdb->private_data;
     if (quit_flag) {
         *quit_flag = 1;
@@ -202,14 +197,14 @@ static void exec_quit(struct command_data_block *pcdb)
 
 static void exec_show_version_detail(struct command_data_block *pcdb)
 {
-    cli_printf("STM32F767IGT6\r\n");
-    cli_printf("Memory: 512K\r\n");
-    cli_printf("Flash:  1024KB\r\n");
+    cli_printf("STM32F767IGT6\n");
+    cli_printf("Memory: 512K\n");
+    cli_printf("Flash:  1024KB\n");
 }
 
 static void exec_show_specfial_log(struct command_data_block *pcdb)
 {
-    cli_printf("%.*s\r\n", pcdb->data_block.string.size, pcdb->data_block.string.string);
+    cli_printf("%.*s\n", pcdb->data_block.string.size, pcdb->data_block.string.string);
 }
 
 static void exec_at24c02_show(struct command_data_block *pcdb)
@@ -238,7 +233,7 @@ static void exec_at24c02_set_value(struct command_data_block *pcdb)
         cli_printf("error: wrong format data\n");
         return;
     } else {
-	i &= 0xFFU;
+        i &= 0xFFU;
         cli_printf("set value to %d\n", i);
     }
 
@@ -261,12 +256,12 @@ static void cli_init(void)
             exec_show_version);
     pcdb[2] = cli_regist_command("log", "show log", NULL, pcdb[0], NULL);
     pcdb[3] = cli_regist_command("at24c02", "operations for at24c02", NULL, NULL, NULL);
+    pcdb[4] = cli_regist_command("set", "set at24c02 first byte", NULL, pcdb[3], NULL);
     (void)cli_regist_command("detail", "show version detail", NULL, pcdb[1], exec_show_version_detail);
     (void)cli_regist_string("show detail log", NULL, pcdb[2], exec_show_specfial_log);
     (void)cli_regist_command("show_lcd", "show lcd", NULL, NULL, exec_show_lcd);
     (void)cli_regist_command("clear", "clean screen", NULL, NULL, exec_clear);
     (void)cli_regist_command("show", "show at24c02 info", NULL, pcdb[3], exec_at24c02_show);
-    pcdb[4] = cli_regist_command("set", "set at24c02 first byte", NULL, pcdb[3], NULL);
     (void)cli_regist_string("an integer", NULL, pcdb[4], exec_at24c02_set_value);
     (void)cli_regist_command("quit", "quit cli, be careful to use", (void *)&quit_flag, NULL, exec_quit);
     (void)cli_regist_command("help", "show cli tree", NULL, NULL, exec_help);

@@ -244,7 +244,7 @@
               <MiscControls>-std=gnu99 --specs=nano.specs --specs=nosys.specs -mfloat-abi=hard -mfpu=fpv5-d16 -ffunction-sections -fdata-sections -u  _printf_float</MiscControls>
               <Define>USE_HAL_DRIVER,ARM_MATH_CM7,__FPU_PRESENT,__FPU_USED=1U</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Src\driver\include;.\Src\include;.\System\core;.\System\device\include;.\System\HAL_Driver\Inc;.\System\FreeRTOS_Kernel\include;.\System\FreeRTOS_Kernel\portable\GCC\ARM_CM7\r0p1;.\Src\drive\include</IncludePath>
+              <IncludePath>.\common\include;.\Src\driver\include;.\Src\include;.\System\core;.\System\device\include;.\System\HAL_Driver\Inc;.\System\FreeRTOS_Kernel\include;.\System\FreeRTOS_Kernel\portable\GCC\ARM_CM7\r0p1;.\Src\drive\include</IncludePath>
             </VariousControls>
           </Carm>
           <Aarm>
@@ -897,10 +897,20 @@
               <FileType>1</FileType>
               <FilePath>.\Src\user_pid.c</FilePath>
             </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Common</GroupName>
+          <Files>
+            <File>
+              <FileName>bufchain.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\common\bufchain.c</FilePath>
+            </File>
             <File>
               <FileName>cli.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Src\cli.c</FilePath>
+              <FilePath>.\common\cli.c</FilePath>
             </File>
           </Files>
         </Group>
