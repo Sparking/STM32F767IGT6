@@ -95,8 +95,7 @@ int USART1ReveiveStr(char *str, int len)
         USART_REC_LEN = 0;
         strncpy(str, _USART_RX_BUF, len);
         STD_UART_CONSOLE_0->CR1 |= 0x00000020U;
-        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1, GPIO_PIN_RESET);
-        
+
         for (int i = 0; i < len; i++) {
             UARTSendChar(STD_UART_CONSOLE_0, str[i]);
         }

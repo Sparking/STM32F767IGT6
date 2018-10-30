@@ -231,12 +231,12 @@
             </OnChipMemories>
           </ArmMisc>
           <Carm>
-            <arpcs>0</arpcs>
+            <arpcs>1</arpcs>
             <stkchk>0</stkchk>
             <reentr>0</reentr>
             <interw>0</interw>
             <bigend>0</bigend>
-            <Strict>1</Strict>
+            <Strict>0</Strict>
             <Optim>4</Optim>
             <wLevel>2</wLevel>
             <uThumb>1</uThumb>

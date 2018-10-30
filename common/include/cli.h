@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define cli_printf(...)     printf(__VA_ARGS__)
 #define cli_malloc(size)    malloc(size)
@@ -34,17 +35,17 @@ struct cli_string_block {
 struct command_data_block {
     int    data_block_type;                 /* 关键字的数据类型 */
     union {
-    	char  *command;                     /* 命令的名称 */
+        char  *command;                     /* 命令的名称 */
         size_t integer;                     /* 解析出来的整数 */
         size_t flags;                       /* 解析出来的标识 */
         struct cli_string_block string;     /* 解析出来的单词 */
     } data_block;
-	char  *desc;                            /* 关键字的描述信息 */
-	struct command_data_block *alt;         /* 备选关键字 */
-	struct command_data_block *next;        /* 关键字的下一跳 */
     size_t next_name_max_len;
+    struct command_data_block *next;        /* 关键字的下一跳 */
+    struct command_data_block *alt;         /* 备选关键字 */
+    char  *desc;                            /* 关键字的描述信息 */
     /* 执行命令的入口 */
-	void (*exec)(struct command_data_block *);
+    void (*exec)(struct command_data_block *);
     void *private_data;                     /* 私有数据 */
 };
 
@@ -65,7 +66,7 @@ extern char *cli_prompt;
  *      返回关键字的数据块指针，NULL表示注册失败
  */
 extern struct command_data_block *cli_regist_command(
-		char *name, char *desc, void *private_data,
+        char *name, char *desc, void *private_data,
         struct command_data_block *super,
         void (*exec)(struct command_data_block *));
 
@@ -79,5 +80,11 @@ extern int cli_exec(char *buf, size_t size);
 extern void release_cli_tree(void);
 
 extern struct command_data_block *cli_first_command_data_block(void);
+
+static inline char cli_string_is(struct cli_string_block *str_blk, char *str, int case_flag) {
+    size_t len = strlen(str);
+    int (*cmp)(const char *, const char *, size_t) = case_flag ? strncmp : strncasecmp;
+    return len == str_blk->size && !(*cmp)(str_blk->string, str, len);
+}
 
 #endif /* End of _NASSURA_CLI_H_ */
