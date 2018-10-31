@@ -89,7 +89,7 @@ static void main_init(void)
         LCD_Clear(LCD_BG_COLOR);
         Key_Init();
         LED_Init();
-        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0 | GPIO_PIN_1, GPIO_PIN_SET);
         RTC_ConfigTime(&time, 9, 6, 50, 1);
         RTC_ConfigDate(&date, 18, 4, 25, 3);
         RTC_Init(&time, &date);
@@ -116,7 +116,7 @@ static void exec_input(char *buff, size_t len)
     int ret;
     unsigned int index;
     unsigned int read_size;
-    static int tab_flag = 0;
+    static int tab_flag;
 
     index = 0;
     cli_printf("%s", cli_prompt);
@@ -245,11 +245,36 @@ static void exec_clear(struct command_data_block *pcdb)
     cli_printf("\f");
 }
 
+static void exec_control_led(struct command_data_block *pcdb)
+{
+    struct cli_string_block *cli_str_blk;
+    GPIO_PinState status;
+
+    if (cli_string_is(&pcdb->data_block.string, "on", 1)) {
+        status = GPIO_PIN_RESET;
+    } else if (cli_string_is(&pcdb->data_block.string, "off", 1)) {
+        status = GPIO_PIN_SET;
+    } else {
+        cli_printf("unknow command!\n");
+        return;
+    }
+
+    cli_str_blk = (struct cli_string_block *)pcdb->private_data;
+    if (cli_string_is(cli_str_blk, "green", 1)) {
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, status);;
+    } else if (cli_string_is(cli_str_blk, "red", 1)) {
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, status);;
+    } else {
+        cli_printf("unknow command!\n");
+        return;
+    }
+}
+
 static int quit_flag = 0;
 
 static void cli_init(void)
 {
-    struct command_data_block *pcdb[5];
+    struct command_data_block *pcdb[7];
 
     pcdb[0] = cli_regist_command("show", "show info", NULL, NULL, NULL);
     pcdb[1] = cli_regist_command("version", "show version", NULL, pcdb[0],
@@ -257,6 +282,9 @@ static void cli_init(void)
     pcdb[2] = cli_regist_command("log", "show log", NULL, pcdb[0], NULL);
     pcdb[3] = cli_regist_command("at24c02", "operations for at24c02", NULL, NULL, NULL);
     pcdb[4] = cli_regist_command("set", "set at24c02 first byte", NULL, pcdb[3], NULL);
+    pcdb[5] = cli_regist_command("led", "control led on or off", NULL, NULL, NULL);
+    pcdb[6] = cli_regist_string("green | red", NULL, pcdb[5], NULL);
+    (void)cli_regist_string("on | off", &pcdb[6]->data_block.string, pcdb[6], exec_control_led);
     (void)cli_regist_command("detail", "show version detail", NULL, pcdb[1], exec_show_version_detail);
     (void)cli_regist_string("show detail log", NULL, pcdb[2], exec_show_specfial_log);
     (void)cli_regist_command("show_lcd", "show lcd", NULL, NULL, exec_show_lcd);
