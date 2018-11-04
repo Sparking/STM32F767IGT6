@@ -53,7 +53,7 @@
           <OutputName>Template</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>0</CreateHexFile>
+          <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>0</BrowseInformation>
           <ListingPath>.\Build\Listings\</ListingPath>
@@ -149,10 +149,10 @@
         <TargetArm>
           <ArmMisc>
             <asLst>1</asLst>
-            <asHll>0</asHll>
+            <asHll>1</asHll>
             <asAsm>1</asAsm>
             <asMacX>0</asMacX>
-            <asSyms>0</asSyms>
+            <asSyms>1</asSyms>
             <asFals>0</asFals>
             <asDbgD>0</asDbgD>
             <asForm>0</asForm>
@@ -231,13 +231,13 @@
             </OnChipMemories>
           </ArmMisc>
           <Carm>
-            <arpcs>1</arpcs>
+            <arpcs>0</arpcs>
             <stkchk>0</stkchk>
             <reentr>0</reentr>
             <interw>0</interw>
             <bigend>0</bigend>
             <Strict>0</Strict>
-            <Optim>4</Optim>
+            <Optim>1</Optim>
             <wLevel>2</wLevel>
             <uThumb>1</uThumb>
             <VariousControls>

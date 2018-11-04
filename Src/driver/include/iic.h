@@ -46,7 +46,7 @@ void IIC_Interface_Init(i2c_interface_t *interface);
 
 /* 初始化I2C设备，设置设备的地址，通信速率 */
 void IIC_Init(i2c_device_t *IIC, i2c_interface_t *interface,
-		unsigned char addr, unsigned char speed);
+        unsigned char addr, unsigned char speed);
 
 /* 开始信号 */
 void IIC_Start(i2c_device_t *IIC);
