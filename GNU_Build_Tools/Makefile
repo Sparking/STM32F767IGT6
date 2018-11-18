@@ -116,6 +116,7 @@ endef
 # common objects
 COMMON_OBJS = \
 	$(OBJDIR)/bufchain.o \
+	$(OBJDIR)/readline.o \
 	$(OBJDIR)/cli.o
 
 # base system objects

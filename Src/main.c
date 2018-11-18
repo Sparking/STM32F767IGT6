@@ -10,7 +10,7 @@
 
 #include "main.h"
 
-#define TIM3_FREQ         1000    /* 定时器的时钟频率设置为1KHz */
+#define TIM3_FREQ     1000    /* 定时器的时钟频率设置为1KHz */
 #define TIM3_PWM2_PERIOD  500     /* 定时器的计数周期设置位500，即一个周期500ms */
 extern void RTC_WKUP_IRQHandler(void);
 
@@ -24,44 +24,44 @@ const char *const String = "XXC Test.\n";
  */
 static void Fill_Str(char *str, int n)
 {
-        int len = strlen(str);
-        while (len < n - 1)
-                str[len++] = ' ';
-        str[len] = '\0';
+    int len = strlen(str);
+    while (len < n - 1)
+        str[len++] = ' ';
+    str[len] = '\0';
 }
 
 static void exec_show_lcd(struct command_data_block *pcdb)
 {
-        char str[29];
-        LCD_CharConfigTypeDef LCD_String;
+    char str[29];
+    LCD_CharConfigTypeDef LCD_String;
 
-        /* LCD显示字符串 */
-        LCD_String.FontConfig.Font = &ASCII_Font[1]; /* 要显示的字体 */
-        /* 字体是否需要其他颜色衬托(是否需要背景色) */
-        LCD_String.FontConfig.Mode = FONT_DISPLAY_WITH_BACK_COLOR;
-        /* 背景色设置为白色 */
-        LCD_String.FontConfig.BackColor = LCD_BG_COLOR;
-        LCD_String.PointConfig.Color = 0x0000U; /* 字符串的颜色设置为黑色 */
-        LCD_String.PointConfig.Layer = LCD_LAYER_1; /* 在第一层显示 */
-        LCD_String.PointConfig.Position.X = 0; /* 字符串开始地址X轴 */
-        LCD_String.PointConfig.Position.Y = 0; /* 字符串开始地址Y轴 */
-        /* 竖屏显示 */
-        LCD_String.PointConfig.Direction = LCD_DIRECTION_V;
-        sprintf(str, "Current Temperature: NULL");
-        Fill_Str(str, 29);
-        LCD_String.PointConfig.Position.X = 0;
-        LCD_String.PointConfig.Position.Y = 32;
-        LCD_Puts(&LCD_String, str);
-        AT24CXX_ReadByte(&at24c02_dev, 0, (unsigned char *)str);
-        sprintf(str, "Target Temperature: %d", (int)str[0]);
-        Fill_Str(str, 29);
-        LCD_String.PointConfig.Position.Y = 48;
-        LCD_Puts(&LCD_String, str);
-        AT24CXX_ReadByte(&at24c02_dev, 1, (unsigned char *)str);
-        sprintf(str, "Heating Status:%s", str[0] == 1 ? "heating" : "stopped");
-        Fill_Str(str, 29);
-        LCD_String.PointConfig.Position.Y = 64;
-        LCD_Puts(&LCD_String, str);
+    /* LCD显示字符串 */
+    LCD_String.FontConfig.Font = &ASCII_Font[1]; /* 要显示的字体 */
+    /* 字体是否需要其他颜色衬托(是否需要背景色) */
+    LCD_String.FontConfig.Mode = FONT_DISPLAY_WITH_BACK_COLOR;
+    /* 背景色设置为白色 */
+    LCD_String.FontConfig.BackColor = LCD_BG_COLOR;
+    LCD_String.PointConfig.Color = 0x0000U; /* 字符串的颜色设置为黑色 */
+    LCD_String.PointConfig.Layer = LCD_LAYER_1; /* 在第一层显示 */
+    LCD_String.PointConfig.Position.X = 0; /* 字符串开始地址X轴 */
+    LCD_String.PointConfig.Position.Y = 0; /* 字符串开始地址Y轴 */
+    /* 竖屏显示 */
+    LCD_String.PointConfig.Direction = LCD_DIRECTION_V;
+    sprintf(str, "Current Temperature: NULL");
+    Fill_Str(str, 29);
+    LCD_String.PointConfig.Position.X = 0;
+    LCD_String.PointConfig.Position.Y = 32;
+    LCD_Puts(&LCD_String, str);
+    AT24CXX_ReadByte(&at24c02_dev, 0, (unsigned char *)str);
+    sprintf(str, "Target Temperature: %d", (int)str[0]);
+    Fill_Str(str, 29);
+    LCD_String.PointConfig.Position.Y = 48;
+    LCD_Puts(&LCD_String, str);
+    AT24CXX_ReadByte(&at24c02_dev, 1, (unsigned char *)str);
+    sprintf(str, "Heating Status:%s", str[0] == 1 ? "heating" : "stopped");
+    Fill_Str(str, 29);
+    LCD_String.PointConfig.Position.Y = 64;
+    LCD_Puts(&LCD_String, str);
 }
 
 void EXTI15_10_IRQHandler(void)
@@ -70,7 +70,6 @@ void EXTI15_10_IRQHandler(void)
 
 static void main_init(void)
 {
-    unsigned char i;
     RTC_DateTypeDef date;
     RTC_TimeTypeDef time;
 
@@ -81,74 +80,57 @@ static void main_init(void)
     i2c_int1.SDA.Pin  = GPIO_PIN_5;
 
     HAL_Init();
+    UART_Init();
+    printf("UART Initialized successed!\n");
+    printf("Initialize SDRAM...");
+    fflush(stdout);
     SDRAM_Init();
+    printf("       \033[32m[OK]\033[0m\n");
+    printf("Initialize LCD...");
     LCD_Init();
+    printf("         \033[32m[OK]\033[0m\n");
+    printf("Initialize LCD Touch...");
+    fflush(stdout);
     LCD_Touch_Init();
+    printf("   \033[32m[OK]\033[0m\n");
     LCD_Clear(LCD_BG_COLOR);
+    printf("Initialize Key...");
+    fflush(stdout);
     Key_Init();
+    printf("         \033[32m[OK]\033[0m\n");
+    printf("Initialize LED...");
+    fflush(stdout);
     LED_Init();
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0 | GPIO_PIN_1, GPIO_PIN_SET);
+    printf("         \033[32m[OK]\033[0m\n");
+    printf("Initialize RTC...");
+    fflush(stdout);
     RTC_ConfigTime(&time, 9, 6, 50, 1);
     RTC_ConfigDate(&date, 18, 4, 25, 3);
     RTC_Init(&time, &date);
     RTC_WeakUp_Enable(WKUP_CLK_PRE_16, 2048); /* 1秒1次唤醒中断 */
     RTC_WKUP_IRQHandler();
+    printf("         \033[32m[OK]\033[0m\n");
+    printf("Initialize AT24C02...");
+    fflush(stdout);
     IIC_Interface_Init(&i2c_int1);
-    UART_Init();
-    printf("UART Initialized successed!\n");
     AT24CXX_Init(&at24c02_dev, &i2c_int1, 0);
-    while (!AT24CXX_Check(&at24c02_dev)) {
-        printf("24C02 Check Failed!\n");
-        printf("Please Check!      \n");
-        delayms(500);
-    }
-    printf("24C02 Ready!\n");
-    //TIM3_PWM_Init(TIM3_FREQ, TIM3_PWM2_PERIOD, 0);
-    AT24CXX_ReadByte(&at24c02_dev, 0, &i);
-    printf("The last set value is %u.\n", i);
+    printf("     \033[32m[OK]\033[0m\n");
+    printf("Initialize CLI...");
+    fflush(stdout);
+    cli_init();
+    printf("         \033[32m[OK]\033[0m\n");
+    printf("Welcome, Nassura!\n");
+
+    /*
+    printf("Initialize TIM3 PWM...");
+    fflush(stdout);
+    TIM3_PWM_Init(TIM3_FREQ, TIM3_PWM2_PERIOD, 0);
     TIM3->CCR2 = 0;
+    printf("    [OK]\n");
+    */
 
     //IWDG_Init();
-}
-
-void exec_input(char *buff, size_t len)
-{
-    int ret;
-    unsigned int index;
-    unsigned int read_size;
-    static char tab_flag = 0;
-
-    index = 0;
-    cli_printf("%s", cli_prompt);
-    if (tab_flag) {
-        index = strlen(buff);
-        cli_printf("%s", buff);
-    }
-    fflush(stdout);
-    tab_flag = 0;
-    while (index < len) {
-        read_size = USARTReveiveStr(buff + index, 1);
-        if (buff[index] == '\r' || buff[index] == '\n') {
-            break;
-        } else if (buff[index] == '\t' || buff[index] == '?') {
-            index++;
-            tab_flag = 1;
-            break;
-        } else if (buff[index] < 127 && buff[index] > 31 && read_size == 1) {
-            index++;
-        } else if (buff[index] == 127) {
-            if (index == 0) {
-                continue;
-            }
-            index--;
-            fflush(stdout);
-        }
-    }
-
-    buff[index] = '\0';
-    if ((ret = cli_exec(buff, len)) < 0) {
-        cli_printf("unknow command!\n");
-    }
 }
 
 static void trave_pcdb(struct command_data_block *pcdb, int i, int flag)
@@ -160,17 +142,17 @@ static void trave_pcdb(struct command_data_block *pcdb, int i, int flag)
         }
         switch (pcdb->data_block_type) {
         case COMMAND_DATA_BLOCK_TYPE_COMMAND:
-            cli_printf("%s", pcdb->data_block.command);
+            cli_printf("\033[33m%s\033[0m", pcdb->data_block.command);
             break;
         default:
-            cli_printf("WORD");
+            cli_printf("\033[33mWORD\033[0m");
             break;
         }
         if (flag) {
             cli_printf(": %s", pcdb->desc);
         }
         if (pcdb->exec) {
-            cli_printf("*");
+            cli_printf("\033[31m*\033[0m");
         }
         cli_printf("\n");
         trave_pcdb(pcdb->next, i + 1, flag);
@@ -188,27 +170,23 @@ static void exec_help(struct command_data_block *pcdb)
 
 static void exec_show_version(struct command_data_block *pcdb)
 {
-    cli_printf("STM32F767IGT6\n");
+    cli_printf("\033[7mSTM32F767IGT6\033[0m\n");
 }
 
-static void exec_quit(struct command_data_block *pcdb)
+extern void Reset_Handler(void);
+static void exec_reload(struct command_data_block *pcdb)
 {
-    int *quit_flag;
-
     release_cli_tree();
-    quit_flag = (int *)pcdb->private_data;
-    if (quit_flag) {
-        *quit_flag = 1;
-    }
-    cli_printf("the cli tree is released, and cli is not available\n");
+    cli_printf("\033[031mreboot the system...\033[0m\n");
+    Reset_Handler();
 }
 
 static void exec_show_version_detail(struct command_data_block *pcdb)
 {
-    cli_printf("STM32F767IGT6\n");
-    cli_printf("Memory: 512K\n");
-    cli_printf("Flash:  1024KB\n");
-    cli_printf("UART: 0x%X\n", (unsigned int)STD_UART_CONSOLE_0);
+    exec_show_version(NULL);
+    cli_printf("\033[7mMemory\033[0m: \033[1m512K\033[0m\n");
+    cli_printf("\033[7mFlash\033[0m: \033[1m1024KB\033[0m\n");
+    cli_printf("\033[7mUART\033[0m: \033[1m0x%X\033[0m\n", (unsigned int)STD_UART_CONSOLE_0);
 }
 
 static void exec_show_specfial_log(struct command_data_block *pcdb)
@@ -249,7 +227,7 @@ static void exec_at24c02_set_value(struct command_data_block *pcdb)
         return;
     }
     memcpy(tmp, ((struct cli_string_block *)pcdb->private_data)->string,
-        ((struct cli_string_block *)pcdb->private_data)->size);
+    ((struct cli_string_block *)pcdb->private_data)->size);
     tmp[((struct cli_string_block *)pcdb->private_data)->size] = '\0';
     ret = sscanf(tmp, "%d", &address);
     if (ret != 1 || address < 0 || address > 255) {
@@ -277,7 +255,7 @@ static void exec_at24c02_set_value(struct command_data_block *pcdb)
 
 static void exec_clear(struct command_data_block *pcdb)
 {
-    cli_printf("\f");
+    cli_printf("\033[2J\f");
 }
 
 static void exec_control_led(struct command_data_block *pcdb)
@@ -290,8 +268,7 @@ static void exec_control_led(struct command_data_block *pcdb)
     } else if (cli_string_is(&pcdb->data_block.string, "off", 1)) {
         status = GPIO_PIN_SET;
     } else {
-        cli_printf("unknow command!\n");
-        return;
+        goto unknow_out;
     }
 
     cli_str_blk = (struct cli_string_block *)pcdb->private_data;
@@ -300,20 +277,18 @@ static void exec_control_led(struct command_data_block *pcdb)
     } else if (cli_string_is(cli_str_blk, "red", 1)) {
         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, status);;
     } else {
+unknow_out:
         cli_printf("unknow command!\n");
-        return;
     }
 }
 
-static int quit_flag = 0;
-
-static void cli_init(void)
+static void cli_tree_init(void)
 {
     struct command_data_block *pcdb[10];
 
     pcdb[0] = cli_regist_command("show", "show info", NULL, NULL, NULL);
     pcdb[1] = cli_regist_command("version", "show version", NULL, pcdb[0],
-            exec_show_version);
+        exec_show_version);
     pcdb[2] = cli_regist_command("log", "show log", NULL, pcdb[0], NULL);
     pcdb[3] = cli_regist_command("at24c02", "operations for at24c02", NULL, NULL, NULL);
     pcdb[4] = cli_regist_string("address [0-255]", NULL, pcdb[3], exec_at24c02_show);
@@ -327,7 +302,7 @@ static void cli_init(void)
     (void)cli_regist_command("show_lcd", "show lcd", NULL, NULL, exec_show_lcd);
     (void)cli_regist_command("clear", "clean screen", NULL, NULL, exec_clear);
     (void)cli_regist_string("value", pcdb[8]->private_data, pcdb[8], exec_at24c02_set_value);
-    (void)cli_regist_command("quit", "quit cli, be careful to use", (void *)&quit_flag, NULL, exec_quit);
+    (void)cli_regist_command("reboot", "reload the system", NULL, NULL, exec_reload);
     (void)cli_regist_command("detail", "show cli tree with help", (void *)1, pcdb[7], exec_help);
 }
 
@@ -336,11 +311,10 @@ int main(void)
     char cmdline[1024];
 
     main_init();
-    cli_init();
+    cli_tree_init();
 
-    while (!quit_flag) {
-        exec_input(cmdline, 1023);
+    while (1) {
+        cli_exec_input(cmdline, 1023);
         fflush(stdout);
     }
 }
-

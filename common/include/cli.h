@@ -87,4 +87,8 @@ static inline char cli_string_is(struct cli_string_block *str_blk, char *str, in
     return len == str_blk->size && !(*cmp)(str_blk->string, str, len);
 }
 
+extern void cli_init(void);
+
+extern void cli_exec_input(char *buff, size_t len);
+
 #endif /* End of _NASSURA_CLI_H_ */

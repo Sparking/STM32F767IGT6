@@ -912,6 +912,16 @@
               <FileType>1</FileType>
               <FilePath>.\common\cli.c</FilePath>
             </File>
+            <File>
+              <FileName>readline.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\common\readline.c</FilePath>
+            </File>
+            <File>
+              <FileName>readline.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\common\include\readline.h</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
