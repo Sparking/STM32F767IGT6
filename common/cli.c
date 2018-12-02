@@ -129,7 +129,7 @@ static struct command_data_block *cli_append_command_pcdb_by_sort(
             new->data_block.command)) >= 0) {
             if (comp_ret != 0)
                 break;
-            cli_printf("keyword %s has already been set!\n", new->data_block.command);
+            cli_printf("keyword %s has already been set!\r\n", new->data_block.command);
             cli_free(new);
             return NULL;
         }
@@ -282,7 +282,7 @@ static int cli_trave_keyword(struct command_data_block *super,
             break;
         }
         if (print_detail_flag) {
-            cli_printf("\033[33m%*s\033[0m: %s\n", super->next_name_max_len, name, alt->desc);
+            cli_printf("\033[33m%*s\033[0m: %s\r\n", super->next_name_max_len, name, alt->desc);
         } else {
             cli_printf("%s", name);
         }
@@ -295,7 +295,7 @@ static int cli_trave_keyword(struct command_data_block *super,
         }
 
         if (!print_detail_flag) {
-            cli_printf(alt ? "\t" : "\n");
+            cli_printf(alt ? "\t" : "\r\n");
         }
     }
     fflush(stdout);
@@ -341,11 +341,11 @@ int cli_exec(char *buf, size_t size)
     next = cli_tree_root.next;
     super = &cli_tree_root;
     line = buf;
+    cli_printf("\r\n");
     while ((keyword = read_first_word(line, &keyword_size, " ")) != NULL) {
         line = keyword + keyword_size;
         lastc = keyword_size - 1;
         if (keyword[lastc] == '\t' || keyword[lastc] == '?') {
-            putchar('\n');
             ret = cli_trave_keyword(super, next, &first_alt, &only_one_flag, keyword,
                     lastc, keyword[lastc] - '\t');
             keyword[lastc] = '\0';
@@ -354,7 +354,7 @@ int cli_exec(char *buf, size_t size)
             }
             if (ret != 0) {
                 if (buf + size < keyword + ret) {
-                    cli_printf("\033[41mwaring\033[0m: the cli input buffer is full!\n");
+                    cli_printf("\033[41mwarning\033[0m: the cli input buffer is full!\r\n");
                     ret = buf + size - keyword;
                 }
                 if (first_alt->data_block_type == COMMAND_DATA_BLOCK_TYPE_COMMAND) {
@@ -362,7 +362,7 @@ int cli_exec(char *buf, size_t size)
                     keyword[ret] = '\0';
                 }
                 if (buf + size < keyword + ret + 1) {
-                    cli_printf("\033[41mwaring\033[0m: this cli input buffer is full!\n");
+                    cli_printf("\033[41mwarning\033[0m: the cli input buffer is full!\r\n");
                     return CLI_EXEC_READ_TAB;
                 }
                 if (only_one_flag) {
@@ -374,7 +374,7 @@ int cli_exec(char *buf, size_t size)
         }
         pcdb = cli_find_alt(next, keyword, keyword_size);
         if (pcdb == NULL) {
-            cli_printf("\'%s\'\n \033[35m%*s\033[0m\n", buf, (int)(1 + keyword - buf), "^");
+            cli_printf("\'%s\'\r\n\033[35m%*s\033[0m\r\n", buf, (int)(1 + keyword - buf), "^");
             return CLI_EXEC_UNKNOW;
         }
         super = pcdb;
@@ -387,7 +387,7 @@ none_out:
     }
 
     if (pcdb->exec == NULL) {
-        cli_printf("command %s is not end\n", buf);
+        cli_printf("command %s is not end\r\n", buf);
         ret = CLI_EXEC_NO_END;
     } else {
         pcdb->exec(pcdb);
@@ -397,43 +397,41 @@ none_out:
     return ret;
 }
 
-void cli_exec_input(char *buff, size_t len)
+void cli_exec_input(char *buff, size_t len, int *tab_flag)
 {
     int ret;
     unsigned int index;
     unsigned int read_size;
-    static char tab_flag = 0;
 
     index = 0;
     cli_printf("%s", cli_prompt);
-    if (tab_flag) {
+    if (*tab_flag) {
         index = strlen(buff);
         cli_printf("%s", buff);
     }
     fflush(stdout);
-    tab_flag = 0;
+    *tab_flag = 0;
     while (index < len) {
         read_size = USARTReveiveStr(buff + index, 1);
         if (buff[index] == '\r' || buff[index] == '\n') {
             break;
         } else if (buff[index] == '\t' || buff[index] == '?') {
             index++;
-            tab_flag = 1;
+            *tab_flag = 1;
             break;
         } else if (buff[index] < 127 && buff[index] > 31 && read_size == 1) {
             index++;
-        } else if (buff[index] == 127) {
-            if (index == 0) {
+        } else if (buff[index] == 127 || buff[index] == 8) {
+            if (index == 0)
                 continue;
-            }
             index--;
-            printf("\033[K");
+            cli_printf("\b\033[K");
             fflush(stdout);
         }
     }
 
     buff[index] = '\0';
     if ((ret = cli_exec(buff, len)) < 0) {
-        cli_printf("unknow command!\n");
+        cli_printf("unknow command!\r\n");
     }
 }

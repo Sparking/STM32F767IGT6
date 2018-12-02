@@ -21,7 +21,8 @@ char *read_first_word(char *line, int *size, const char *delm)
     for (i = 0; line[i] != '\0'; i++) {
         if (strchr(delm, line[i]) == NULL) {
             this_word = line + i;
-            while (strchr(delm, line[i]) == NULL) {
+            while (strchr(delm, line[i]) == NULL && line[i] != '\0'
+                && line[i] != '\r' && line[i] != '\n') {
                 i++;
             }
             *size = line + i - this_word;

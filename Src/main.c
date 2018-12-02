@@ -17,7 +17,7 @@ extern void RTC_WKUP_IRQHandler(void);
 /* IIC设备接口1 */
 i2c_interface_t i2c_int1;
 i2c_device_t at24c02_dev;
-const char *const String = "XXC Test.\n";
+const char *const String = "XXC Test.\r\n";
 
 /*
  * 将字符串全部填为空格符
@@ -81,28 +81,28 @@ static void main_init(void)
 
     HAL_Init();
     UART_Init();
-    printf("UART Initialized successed!\n");
+    printf("UART Initialized success!\r\n");
     printf("Initialize SDRAM...");
     fflush(stdout);
     SDRAM_Init();
-    printf("       \033[32m[OK]\033[0m\n");
+    printf("       \033[32m[OK]\033[0m\r\n");
     printf("Initialize LCD...");
     LCD_Init();
-    printf("         \033[32m[OK]\033[0m\n");
+    printf("         \033[32m[OK]\033[0m\r\n");
     printf("Initialize LCD Touch...");
     fflush(stdout);
     LCD_Touch_Init();
-    printf("   \033[32m[OK]\033[0m\n");
+    printf("   \033[32m[OK]\033[0m\r\n");
     LCD_Clear(LCD_BG_COLOR);
     printf("Initialize Key...");
     fflush(stdout);
     Key_Init();
-    printf("         \033[32m[OK]\033[0m\n");
+    printf("         \033[32m[OK]\033[0m\r\n");
     printf("Initialize LED...");
     fflush(stdout);
     LED_Init();
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0 | GPIO_PIN_1, GPIO_PIN_SET);
-    printf("         \033[32m[OK]\033[0m\n");
+    printf("         \033[32m[OK]\033[0m\r\n");
     printf("Initialize RTC...");
     fflush(stdout);
     RTC_ConfigTime(&time, 9, 6, 50, 1);
@@ -110,17 +110,17 @@ static void main_init(void)
     RTC_Init(&time, &date);
     RTC_WeakUp_Enable(WKUP_CLK_PRE_16, 2048); /* 1秒1次唤醒中断 */
     RTC_WKUP_IRQHandler();
-    printf("         \033[32m[OK]\033[0m\n");
+    printf("         \033[32m[OK]\033[0m\r\n");
     printf("Initialize AT24C02...");
     fflush(stdout);
     IIC_Interface_Init(&i2c_int1);
     AT24CXX_Init(&at24c02_dev, &i2c_int1, 0);
-    printf("     \033[32m[OK]\033[0m\n");
+    printf("     \033[32m[OK]\033[0m\r\n");
     printf("Initialize CLI...");
     fflush(stdout);
     cli_init();
-    printf("         \033[32m[OK]\033[0m\n");
-    printf("Welcome, Nassura!\n");
+    printf("         \033[32m[OK]\033[0m\r\n");
+    printf("Welcome, Nassura!\r\n");
 
     /*
     printf("Initialize TIM3 PWM...");
@@ -154,7 +154,7 @@ static void trave_pcdb(struct command_data_block *pcdb, int i, int flag)
         if (pcdb->exec) {
             cli_printf("\033[31m*\033[0m");
         }
-        cli_printf("\n");
+        cli_printf("\r\n");
         trave_pcdb(pcdb->next, i + 1, flag);
         trave_pcdb(pcdb->alt, i, flag);
     }
@@ -170,28 +170,28 @@ static void exec_help(struct command_data_block *pcdb)
 
 static void exec_show_version(struct command_data_block *pcdb)
 {
-    cli_printf("\033[7mSTM32F767IGT6\033[0m\n");
+    cli_printf("\033[7mSTM32F767IGT6\033[0m\r\n");
 }
 
 extern void Reset_Handler(void);
 static void exec_reload(struct command_data_block *pcdb)
 {
     release_cli_tree();
-    cli_printf("\033[031mreboot the system...\033[0m\n");
+    cli_printf("\033[031mreboot the system...\033[0m\r\n");
     Reset_Handler();
 }
 
 static void exec_show_version_detail(struct command_data_block *pcdb)
 {
     exec_show_version(NULL);
-    cli_printf("\033[7mMemory\033[0m: \033[1m512K\033[0m\n");
-    cli_printf("\033[7mFlash\033[0m: \033[1m1024KB\033[0m\n");
-    cli_printf("\033[7mUART\033[0m: \033[1m0x%X\033[0m\n", (unsigned int)STD_UART_CONSOLE_0);
+    cli_printf("\033[7mMemory\033[0m: \033[1m512K\033[0m\r\n");
+    cli_printf("\033[7mFlash\033[0m: \033[1m1024KB\033[0m\r\n");
+    cli_printf("\033[7mUART\033[0m: \033[1m0x%X\033[0m\r\n", (unsigned int)STD_UART_CONSOLE_0);
 }
 
 static void exec_show_specfial_log(struct command_data_block *pcdb)
 {
-    cli_printf("%.*s\n", pcdb->data_block.string.size, pcdb->data_block.string.string);
+    cli_printf("%.*s\r\n", pcdb->data_block.string.size, pcdb->data_block.string.string);
 }
 
 static void exec_at24c02_show(struct command_data_block *pcdb)
@@ -207,12 +207,12 @@ static void exec_at24c02_show(struct command_data_block *pcdb)
     tmp[pcdb->data_block.string.size] = '\0';
     if (sscanf(tmp, "%d", &address) != 1 || (address < 0 || address > 255)) {
 invalid_address_out:
-        cli_printf("address is invalid\n");
+        cli_printf("address is invalid\r\n");
         return;
     }
 
     AT24CXX_ReadByte(&at24c02_dev, (unsigned short)address, &i);
-    cli_printf("%d\n", i);
+    cli_printf("%d\r\n", i);
 }
 
 static void exec_at24c02_set_value(struct command_data_block *pcdb)
@@ -223,7 +223,7 @@ static void exec_at24c02_set_value(struct command_data_block *pcdb)
     char tmp[4];
 
     if (((struct cli_string_block *)pcdb->private_data)->size > 4) {
-        cli_printf("address is invalid\n");
+        cli_printf("address is invalid\r\n");
         return;
     }
     memcpy(tmp, ((struct cli_string_block *)pcdb->private_data)->string,
@@ -231,23 +231,23 @@ static void exec_at24c02_set_value(struct command_data_block *pcdb)
     tmp[((struct cli_string_block *)pcdb->private_data)->size] = '\0';
     ret = sscanf(tmp, "%d", &address);
     if (ret != 1 || address < 0 || address > 255) {
-        cli_printf("error: wrong format address!\n");
+        cli_printf("error: wrong format address!\r\n");
         return;
     }
 
     if (pcdb->data_block.string.size > sizeof(tmp)) {
-        cli_printf("value is invalid\n");
+        cli_printf("value is invalid\r\n");
         return;
     }
     memcpy(tmp, pcdb->data_block.string.string, pcdb->data_block.string.size);
     tmp[pcdb->data_block.string.size] = '\0';
     ret = sscanf(tmp, "%d", &value);
     if (ret != 1) {
-        cli_printf("error: wrong format value!\n");
+        cli_printf("error: wrong format value!\r\n");
         return;
     } else {
         value &= 0xFFU;
-        cli_printf("set value to %d\n", value);
+        cli_printf("set value to %d\r\n", value);
     }
 
     AT24CXX_WriteByte(&at24c02_dev, (unsigned short)address, (unsigned char)value);
@@ -278,7 +278,7 @@ static void exec_control_led(struct command_data_block *pcdb)
         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, status);;
     } else {
 unknow_out:
-        cli_printf("unknow command!\n");
+        cli_printf("unknow command!\r\n");
     }
 }
 
@@ -287,8 +287,7 @@ static void cli_tree_init(void)
     struct command_data_block *pcdb[10];
 
     pcdb[0] = cli_regist_command("show", "show info", NULL, NULL, NULL);
-    pcdb[1] = cli_regist_command("version", "show version", NULL, pcdb[0],
-        exec_show_version);
+    pcdb[1] = cli_regist_command("version", "show version", NULL, pcdb[0], exec_show_version);
     pcdb[2] = cli_regist_command("log", "show log", NULL, pcdb[0], NULL);
     pcdb[3] = cli_regist_command("at24c02", "operations for at24c02", NULL, NULL, NULL);
     pcdb[4] = cli_regist_string("address [0-255]", NULL, pcdb[3], exec_at24c02_show);
@@ -309,12 +308,15 @@ static void cli_tree_init(void)
 int main(void)
 {
     char cmdline[1024];
+    int tab_flag;
 
     main_init();
     cli_tree_init();
 
+    tab_flag = 0;
     while (1) {
-        cli_exec_input(cmdline, 1023);
+        cli_exec_input(cmdline, 1023, &tab_flag);
         fflush(stdout);
     }
 }
+
