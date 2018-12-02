@@ -374,7 +374,7 @@ int cli_exec(char *buf, size_t size)
         }
         pcdb = cli_find_alt(next, keyword, keyword_size);
         if (pcdb == NULL) {
-            cli_printf("\'%s\'\r\n\033[35m%*s\033[0m\r\n", buf, (int)(1 + keyword - buf), "^");
+            cli_printf("\'%s\'\r\n\033[35m %*s\033[0m\r\n", buf, (int)(1 + keyword - buf), "^");
             return CLI_EXEC_UNKNOW;
         }
         super = pcdb;
@@ -425,7 +425,7 @@ void cli_exec_input(char *buff, size_t len, int *tab_flag)
             if (index == 0)
                 continue;
             index--;
-            cli_printf("\b\033[K");
+            cli_printf("\033[K");
             fflush(stdout);
         }
     }
