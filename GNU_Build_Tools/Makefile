@@ -6,11 +6,20 @@ DIR_DIV  = \\
 MKDIR    = mkdir
 RMDIR    = rmdir
 RM       = del -f
+print    = echo
 else
+OS       = $(shell uname)
 DIR_DIV  = /
 MKDIR    = mkdir -p
 RMDIR    = rmdir
 RM       = rm -f
+print    = printf
+color_red    = \\033[31m
+color_green  = \\033[32m
+color_yellow = \\033[33m
+close_color  = \\033[0m
+bol          = \\r\\033[K
+eol          = \\r\\n
 endif
 
 OUTPUTDIR  = $(ROOTDIR)$(DIR_DIV)Build
@@ -89,27 +98,27 @@ LIBRARY_OPT = \
     -lm
 
 define compile_as
-@echo "    AS    $(subst $(ROOTDIR)/,,$<)"
+@$(print) "$(bol)$(color_yellow)AS$(close_color)    $(color_green)$(subst $(ROOTDIR)/,,$<)$(close_color)$(eol)"
 @$(AS) $(ASFLAGS) -c $< -o $@
 endef
 
 define compile_c
-@echo "    CC    $(subst $(ROOTDIR)/,,$<)"
+@$(print) "$(bol)$(color_yellow)CC$(close_color)    $(color_green)$(subst $(ROOTDIR)/,,$<)$(close_color)$(eol)"
 @$(CC) $(CODE_OPT_FLAGS) $(CPPFLAGS) -c $< -o $@
 endef
 
 define link_object
-@echo "    LD    $(subst $(ROOTDIR)$(DIR_DIV),,$@)"
+@$(print) "$(bol)$(color_yellow)LD$(close_color)    $(color_green)$(subst $(ROOTDIR)$(DIR_DIV),,$@)$(close_color)$(eol)"
 @$(CC) $(LDFLAGS) -T $(LDSCRIPT) $^ -o $@ $(LIBRARY_OPT)
 endef
 
 define objcopy_binary
-@echo "    GEN   $(subst $(ROOTDIR)$(DIR_DIV),,$@)"
+@$(print) "$(bol)$(color_yellow)GEN$(close_color)   $(color_green)$(subst $(ROOTDIR)$(DIR_DIV),,$@)$(close_color)$(eol)"
 @$(OBJCOPY) -O binary -I ihex $< $@
 endef
 
 define objcopy_ihex
-@echo "    GEN   $(subst $(ROOTDIR)$(DIR_DIV),,$@)"
+@$(print) "$(bol)$(color_yellow)GEN$(close_color)   $(color_green)$(subst $(ROOTDIR)$(DIR_DIV),,$@)$(close_color)$(eol)"
 @$(OBJCOPY) -O ihex $< $@
 endef
 
@@ -225,6 +234,7 @@ KERNEL_PORTOBJS = \
 #build options
 .PHONY:all clean init
 all: init $(BINARY)
+	@$(print) "$(bol)Success to build the project$(eol)"
 
 include scripts/objects.mk
 
@@ -241,7 +251,7 @@ clean:
 	@echo remove all directories.
 	-@${RMDIR} $(OUTPUTDIR)
 init:
-	@echo Building on the $(OS).
+	@echo Building on the $(OS)
 	-@$(MKDIR) $(OBJDIR)
 $(ELF): $(OBJS)
 	$(call link_object)
