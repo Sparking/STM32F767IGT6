@@ -44,6 +44,7 @@ PLATFORM = arm-none-eabi
 CC       = $(PLATFORM)-gcc
 AS       = $(PLATFORM)-as
 LD       = $(PLATFORM)-ld
+SIZE     = $(PLATFORM)-size
 OBJCOPY  = $(PLATFORM)-objcopy
 
 #complier's flags
@@ -234,6 +235,7 @@ KERNEL_PORTOBJS = \
 #build options
 .PHONY:all clean init
 all: init $(BINARY)
+	@$(SIZE) $(ELF)
 	@$(print) "$(bol)Success to build the project$(eol)"
 
 include scripts/objects.mk
