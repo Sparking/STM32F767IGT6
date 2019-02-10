@@ -85,3 +85,4 @@ unsigned char AT24CXX_Check(i2c_device_t *at24cxx_dev)
     }
     return ret;
 }
+

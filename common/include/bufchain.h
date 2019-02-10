@@ -9,7 +9,7 @@
  */
 typedef int (* bufchain_handleoutfn_t)(void *from_buffer, int counts);
 
- __attribute__(( aligned(sizeof(void*) ))) struct bufchain_t {
+ __attribute__(( aligned(sizeof(void*)) )) struct bufchain_t {
 	bufchain_handleoutfn_t out;     /* 回调函数，处理出队的元素 */
 	unsigned int count_size;        /* 每项数据占用的空间大小 */
 	unsigned int total_counts;      /* 队列可存放的数据项数 */
@@ -43,3 +43,4 @@ extern void *bufchain_next_addr(bufchain chain, unsigned int counts);
 extern void bufchain_destory(bufchain chain);
 
 #endif
+

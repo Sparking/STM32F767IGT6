@@ -12,7 +12,8 @@
  * @retval:
  *    成功返回单词的地址,失败返回NULL
  */
-char *read_first_word(char *line, int *size, const char *delm)
+char *read_first_word(char *__restrict line, int *__restrict size,
+    const char *__restrict delm)
 {
     int i;
     char *this_word;
@@ -32,3 +33,4 @@ char *read_first_word(char *line, int *size, const char *delm)
 
     return this_word;
 }
+

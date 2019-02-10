@@ -4,8 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
-#define cli_printf(...)     printf(__VA_ARGS__)
+#define cli_printf(fmt,...) printf(fmt, ##__VA_ARGS__)
 #define cli_malloc(size)    malloc(size)
 #define cli_free(p)         free(p)
 
@@ -81,7 +82,7 @@ extern void release_cli_tree(void);
 
 extern struct command_data_block *cli_first_command_data_block(void);
 
-static inline char cli_string_is(struct cli_string_block *str_blk, char *str, int case_flag) {
+static inline bool cli_string_is(struct cli_string_block *str_blk, char *str, int case_flag) {
     size_t len = strlen(str);
     int (*cmp)(const char *, const char *, size_t) = case_flag ? strncmp : strncasecmp;
     return len == str_blk->size && !(*cmp)(str_blk->string, str, len);
@@ -92,3 +93,4 @@ extern void cli_init(void);
 extern void cli_exec_input(char *buff, size_t len, int *tab_flag);
 
 #endif /* End of _NASSURA_CLI_H_ */
+

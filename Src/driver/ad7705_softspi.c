@@ -82,3 +82,4 @@ unsigned short AD7705_SoftSPI_ReadData(SoftSPI_DeviceTypeDef *dev)
         SoftSPI_HalfDuplex_ReadData(dev, &data, 2);
         return data;
 }
+

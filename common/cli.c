@@ -37,7 +37,7 @@ static void _release_cli_tree_node(struct command_data_block *pcdb)
     if (pcdb) {
         _release_cli_tree_node(pcdb->alt);
         _release_cli_tree_node(pcdb->next);
-        free(pcdb);
+        cli_free(pcdb);
     }
 }
 
@@ -281,6 +281,7 @@ static int cli_trave_keyword(struct command_data_block *super,
             name = alt->data_block.command;
             break;
         }
+
         if (print_detail_flag) {
             cli_printf("\033[33m%*s\033[0m: %s\r\n", super->next_name_max_len, name, alt->desc);
         } else {
@@ -313,6 +314,7 @@ static int cli_trave_keyword(struct command_data_block *super,
     if (*first_alt_for_tab != last_alt_for_tab) {
         *only_one_flag = 0;
     }
+
     return cli_command_max_prefix_size(
             (*first_alt_for_tab)->data_block.command,
             last_alt_for_tab->data_block.command);
@@ -332,15 +334,15 @@ int cli_exec(char *buf, size_t size)
     int ret;
 
     if (buf == NULL) {
-        goto none_out;
+        return CLI_EXEC_NONE;
     }
 
     only_one_flag = 0;
-    pcdb = NULL;
-    first_alt = NULL;
-    next = cli_tree_root.next;
-    super = &cli_tree_root;
-    line = buf;
+    pcdb          = NULL;
+    first_alt     = NULL;
+    next          = cli_tree_root.next;
+    super         = &cli_tree_root;
+    line          = buf;
     cli_printf("\r\n");
     while ((keyword = read_first_word(line, &keyword_size, " ")) != NULL) {
         line = keyword + keyword_size;
@@ -352,19 +354,22 @@ int cli_exec(char *buf, size_t size)
             if (ret < 0 || (next == NULL && lastc != 0)) {
                 return CLI_EXEC_UNKNOW_TAB;
             }
+
             if (ret != 0) {
                 if (buf + size < keyword + ret) {
                     cli_printf("\033[41mwarning\033[0m: the cli input buffer is full!\r\n");
                     ret = buf + size - keyword;
                 }
+
                 if (first_alt->data_block_type == COMMAND_DATA_BLOCK_TYPE_COMMAND) {
-                    memcpy(keyword, first_alt->data_block.command, ret);
-                    keyword[ret] = '\0';
+                    strncpy(keyword, first_alt->data_block.command, ret - 1);
                 }
+
                 if (buf + size < keyword + ret + 1) {
                     cli_printf("\033[41mwarning\033[0m: the cli input buffer is full!\r\n");
                     return CLI_EXEC_READ_TAB;
                 }
+
                 if (only_one_flag) {
                     keyword[ret++] = ' ';
                     keyword[ret] = '\0';
@@ -372,17 +377,18 @@ int cli_exec(char *buf, size_t size)
             }
             return CLI_EXEC_READ_TAB;
         }
+
         pcdb = cli_find_alt(next, keyword, keyword_size);
         if (pcdb == NULL) {
             cli_printf("\'%s\'\r\n\033[35m %*s\033[0m\r\n", buf, (int)(1 + keyword - buf), "^");
             return CLI_EXEC_UNKNOW;
         }
+
         super = pcdb;
         next = pcdb->next;
     }
 
     if (next == cli_tree_root.next) {
-none_out:
         return CLI_EXEC_NONE;
     }
 
@@ -410,6 +416,7 @@ void cli_exec_input(char *buff, size_t len, int *tab_flag)
         cli_printf("%s", buff);
     }
     fflush(stdout);
+
     *tab_flag = 0;
     while (index < len) {
         read_size = USARTReveiveStr(buff + index, 1);
@@ -435,3 +442,4 @@ void cli_exec_input(char *buff, size_t len, int *tab_flag)
         cli_printf("unknow command!\r\n");
     }
 }
+

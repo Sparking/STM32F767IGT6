@@ -10,7 +10,7 @@
 
 #include "main.h"
 
-#define TIM3_FREQ     1000    /* 定时器的时钟频率设置为1KHz */
+#define TIM3_FREQ         1000    /* 定时器的时钟频率设置为1KHz */
 #define TIM3_PWM2_PERIOD  500     /* 定时器的计数周期设置位500，即一个周期500ms */
 extern void RTC_WKUP_IRQHandler(void);
 
@@ -176,8 +176,8 @@ static void exec_show_version(struct command_data_block *pcdb)
 extern void Reset_Handler(void);
 static void exec_reload(struct command_data_block *pcdb)
 {
-    release_cli_tree();
     cli_printf("\033[031mreboot the system...\033[0m\r\n");
+    release_cli_tree();
     Reset_Handler();
 }
 
