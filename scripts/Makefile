@@ -98,29 +98,47 @@ LIBRARY_OPT = \
     -larm_cortexM7lfdp_math \
     -lm
 
+ifeq ($(V), 1)
+Q := 
+build_slient :=
+else
+Q := @
+build_slient := y
+endif
+
 define compile_as
-@$(print) "$(bol)$(color_yellow)AS$(close_color)    $(color_green)$(subst $(ROOTDIR)/,,$<)$(close_color)$(eol)"
-@$(AS) $(ASFLAGS) -c $< -o $@
+@if [ "$(build_slient)" == "y" ]; then \
+$(print) "$(bol)$(color_yellow)AS$(close_color)    $(color_green)$(subst $(ROOTDIR)/,,$<)$(close_color)$(eol)"; \
+fi
+$(Q)$(AS) $(ASFLAGS) -c $< -o $@
 endef
 
 define compile_c
-@$(print) "$(bol)$(color_yellow)CC$(close_color)    $(color_green)$(subst $(ROOTDIR)/,,$<)$(close_color)$(eol)"
-@$(CC) $(CODE_OPT_FLAGS) $(CPPFLAGS) -c $< -o $@
+@if [ "$(build_slient)" == "y" ]; then \
+$(print) "$(bol)$(color_yellow)CC$(close_color)    $(color_green)$(subst $(ROOTDIR)/,,$<)$(close_color)$(eol)"; \
+fi
+$(Q)$(CC) $(CODE_OPT_FLAGS) $(CPPFLAGS) -c $< -o $@
 endef
 
 define link_object
-@$(print) "$(bol)$(color_yellow)LD$(close_color)    $(color_green)$(subst $(ROOTDIR)$(DIR_DIV),,$@)$(close_color)$(eol)"
-@$(CC) $(LDFLAGS) -T $(LDSCRIPT) $^ -o $@ $(LIBRARY_OPT)
+@if [ "$(build_slient)" == "y" ]; then \
+$(print) "$(bol)$(color_yellow)LD$(close_color)    $(color_green)$(subst $(ROOTDIR)$(DIR_DIV),,$@)$(close_color)$(eol)"; \
+fi
+$(Q)$(CC) $(LDFLAGS) -T $(LDSCRIPT) $^ -o $@ $(LIBRARY_OPT)
 endef
 
 define objcopy_binary
-@$(print) "$(bol)$(color_yellow)GEN$(close_color)   $(color_green)$(subst $(ROOTDIR)$(DIR_DIV),,$@)$(close_color)$(eol)"
-@$(OBJCOPY) -O binary -I ihex $< $@
+@if [ "$(build_slient)" == "y" ]; then \
+$(print) "$(bol)$(color_yellow)GEN$(close_color)   $(color_green)$(subst $(ROOTDIR)$(DIR_DIV),,$@)$(close_color)$(eol)"; \
+fi
+$(Q)$(OBJCOPY) -I ihex -O binary $< $@
 endef
 
 define objcopy_ihex
-@$(print) "$(bol)$(color_yellow)GEN$(close_color)   $(color_green)$(subst $(ROOTDIR)$(DIR_DIV),,$@)$(close_color)$(eol)"
-@$(OBJCOPY) -O ihex $< $@
+@if [ "$(build_slient)" == "y" ]; then \
+$(print) "$(bol)$(color_yellow)GEN$(close_color)   $(color_green)$(subst $(ROOTDIR)$(DIR_DIV),,$@)$(close_color)$(eol)"; \
+fi
+$(Q)$(OBJCOPY) -O ihex $< $@
 endef
 
 # common objects
@@ -235,7 +253,7 @@ KERNEL_PORTOBJS = \
 #build options
 .PHONY:all clean init
 all: init $(BINARY)
-	@$(SIZE) $(ELF)
+	$(Q)$(SIZE) $(ELF)
 	@$(print) "$(bol)Success to build the project$(eol)"
 
 include scripts/objects.mk
