@@ -1,0 +1,16 @@
+mainmenu "linux-$(uname -a) Configuration"
+
+comment "environment settings"
+
+menuconfig ENV
+    bool "environment settings"
+    default n
+    ---help---
+        nothing
+
+config KBUILD_src
+    string "source directory"
+    default ""
+    help
+        nothing
+
