@@ -278,14 +278,10 @@ $(Q)$(OBJCOPY) -O ihex $< $@
 endef
 
 # build options
-.PHONY:all clean init
+.PHONY:all clean init st-flash
 all: init $(BINARY)
 	$(Q)$(SIZE) $(ELF)
 	@$(print) "$(bol)Success to build the project$(eol)"
-
-print:
-	@echo $(OBJS)
-
 clean:
 	@echo clean all object files.
 	-@cd $(OBJDIR) && $(RM) *.o
@@ -300,6 +296,8 @@ clean:
 init:
 	@echo Building on the $(OS)
 	-@$(MKDIR) $(OBJDIR)
+st-flash: $(BINARY)
+	st-flash write $< 0x08000000
 
 $(ELF): $(OBJS)
 	$(call link_object)
