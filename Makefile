@@ -1,13 +1,5 @@
 #Directory
 
-ifeq ($(OS),Windows_NT)
-# Windows中有些命令不识别带有字符'/'的路径名
-DIR_DIV  := \\
-MKDIR    := mkdir
-RMDIR    := rmdir
-RM       := del -f
-print    := echo
-else
 OS       := $(shell uname)
 DIR_DIV  := /
 MKDIR    := mkdir -p
@@ -22,13 +14,12 @@ color_yellow := \\033[33m
 close_color  := \\033[0m
 bol          := \\r\\033[K
 eol          := \\r\\n
-endif
 
 ROOTDIR   = $(CURDIR)
 
 # 输出的二进制文件的存放位置
-O         ?= $(ROOTDIR)$(DIR_DIV)Build
-OBJDIR    ?= $(O)$(DIR_DIV)GCC_Objects
+O       ?= $(ROOTDIR)/Build
+OBJDIR  ?= $(O)/GCC_Objects
 
 # 输出的文件名
 MCU      = stm32f767igt6
@@ -308,7 +299,7 @@ clean:
 	-@$(RMDIR) $(O)
 init:
 	@echo Building on the $(OS)
-	-$(MKDIR) $(OBJDIR)
+	-@$(MKDIR) $(OBJDIR)
 
 $(ELF): $(OBJS)
 	$(call link_object)
