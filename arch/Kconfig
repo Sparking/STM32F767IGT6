@@ -1,3 +1,0 @@
-source "board/Kconfig"
-source "kernel/Kconfig"
-source "contrib/Kconfig"
